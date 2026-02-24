@@ -79,7 +79,6 @@ namespace ClubManagement.Controllers
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-
                 await transaction.CommitAsync();
 
                 // Return response without password
