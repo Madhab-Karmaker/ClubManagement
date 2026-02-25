@@ -14,7 +14,5 @@ namespace ClubManagement.Domain.DTOs
         public DateTime? JoinDate { get; set; }
         public DateTime? ExpiryDate { get; set; }
 
-        // Optional RoleIds for assigning roles
-        public List<int>? RoleIds { get; set; }
     }
 }

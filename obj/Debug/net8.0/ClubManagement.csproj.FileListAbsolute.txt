@@ -105,11 +105,9 @@ G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 G:\ClubManagement\ClubManagement\obj\Debug\net8.0\ClubManagement.MvcApplicationPartsAssemblyInfo.cs
-G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
-G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
@@ -117,4 +115,6 @@ G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.Extensions.WebEncode
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\System.Security.Cryptography.Xml.dll
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+G:\ClubManagement\ClubManagement\obj\Debug\net8.0\ClubManagement.sourcelink.json
+G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 G:\ClubManagement\ClubManagement\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

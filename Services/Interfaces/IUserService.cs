@@ -5,7 +5,7 @@ namespace ClubManagement.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<User> CreateUserAsync(CreateUserDto dto);
+        Task<User> CreateUserAsync(RegisterDto dto);
         Task<User?> GetUserByUsernameAsync(string username);
         Task<bool> ValidateUserPasswordAsync(string username, string password);
         Task<List<User>> GetAllUsersAsync();

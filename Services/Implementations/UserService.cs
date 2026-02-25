@@ -1,69 +1,59 @@
 ﻿using ClubManagement.Domain.DTOs;
 using ClubManagement.Domain.Models;
-using ClubManagement.Infrastructure.Data;
 using ClubManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-public class UserService : IUserService
+namespace ClubManagement.Services
 {
-    private readonly AppDbContext _context;
-    private readonly IPasswordHasher<User> _passwordHasher;
-
-    public UserService(AppDbContext context,
-                       IPasswordHasher<User> passwordHasher)
+    public class UserService : IUserService
     {
-        _context = context;
-        _passwordHasher = passwordHasher;
-    }
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-    public async Task<User> CreateUserAsync(CreateUserDto dto)
-    {
-        if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
-            throw new Exception("Username already exists");
-
-        var user = new User
+        public UserService(UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            Username = dto.Username,
-            Email = dto.Email
-        };
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
 
-        user.Password =
-            _passwordHasher.HashPassword(user, dto.Password);
+        public async Task<User> CreateUserAsync(RegisterDto dto)
+        {
+            var existingUser = await _userManager.FindByNameAsync(dto.Username);
+            if (existingUser != null)
+                throw new Exception("Username already exists");
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+            var user = new User
+            {
+                UserName = dto.Username,
+                Email = dto.Email,
+            };
 
-        return user;
-    }
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
 
-    // ✅ Added this method (missing before)
-    public async Task<User?> GetUserByUsernameAsync(string username)
-    {
-        return await _context.Users
-            .FirstOrDefaultAsync(u => u.Username == username);
-    }
+            return user;
+        }
 
-    // ✅ Renamed to match interface
-    public async Task<bool> ValidateUserPasswordAsync(string username, string password)
-    {
-        var user = await GetUserByUsernameAsync(username);
+        public async Task<User?> GetUserByUsernameAsync(string username)
+        {
+            return await _userManager.FindByNameAsync(username);
+        }
 
-        if (user == null) return false;
+        public async Task<bool> ValidateUserPasswordAsync(string username, string password)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null) return false;
 
-        var result = _passwordHasher.VerifyHashedPassword(
-            user,
-            user.Password,
-            password
-        );
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            return result.Succeeded;
+        }
 
-        return result == PasswordVerificationResult.Success;
-    }
-
-    public async Task<List<User>> GetAllUsersAsync()
-    {
-        return await _context.Users
-            .Include(u => u.Roles)
-            .ToListAsync();
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            // UserManager এর Users property IQueryable<User> return করে
+            return await _userManager.Users.ToListAsync();
+        }
     }
 }

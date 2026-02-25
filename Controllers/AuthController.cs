@@ -1,6 +1,6 @@
-﻿using ClubManagement.Domain.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using ClubManagement.Domain.DTOs;
 using ClubManagement.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -12,8 +12,6 @@ public class AuthController : ControllerBase
     {
         _userService = userService;
     }
-
-    // Registration (Self signup)
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
@@ -22,26 +20,26 @@ public class AuthController : ControllerBase
             var user = await _userService.CreateUserAsync(dto);
             return Ok(new
             {
-                user.UserId,
-                user.Username,
-                user.Email
+                message = "User registered successfully",
+                username = user.UserName, email = user.Email
             });
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
         }
     }
-
-    // Login
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
         var isValid = await _userService.ValidateUserPasswordAsync(dto.Username, dto.Password);
-        if (!isValid)
-            return Unauthorized("Invalid credentials");
 
-        return Ok("Login successful");
-        // 🔹 Next step: JWT token return
+        if (!isValid)
+            return Unauthorized(new { message = "Invalid username or password" });
+
+        // Optional: token generate if JWT
+        // var token = await _userService.LoginAsync(dto);
+
+        return Ok(new { message = "Login successful" });
     }
 }
