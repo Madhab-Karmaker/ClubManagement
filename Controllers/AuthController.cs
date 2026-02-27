@@ -4,31 +4,18 @@ using ClubManagement.Services.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]
+// Controller for handling user authentication (Login/Logout).
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
 
+    // Initializes a new instance of the AuthController.
     public AuthController(IUserService userService)
     {
         _userService = userService;
     }
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDto dto)
-    {
-        try
-        {
-            var user = await _userService.CreateUserAsync(dto);
-            return Ok(new
-            {
-                message = "User registered successfully",
-                username = user.UserName, email = user.Email
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
+
+    // Authenticates a user and starts a session.
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
@@ -41,5 +28,13 @@ public class AuthController : ControllerBase
         // var token = await _userService.LoginAsync(dto);
 
         return Ok(new { message = "Login successful" });
+    }
+
+    // Logs out the current user and ends the session.
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _userService.LogoutAsync();
+        return Ok(new { message = "Logout successful" });
     }
 }
