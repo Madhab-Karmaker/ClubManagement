@@ -24,14 +24,5 @@ namespace ClubManagement.Services.Interfaces
 
         // Logs out the current user.
         Task LogoutAsync();
-
-        // Assigns a role to a user.
-        Task<IdentityResult> AssignRoleAsync(User user, string roleName);
-
-        // Removes a role from a user.
-        Task<IdentityResult> RemoveRoleAsync(User user, string roleName);
-
-        // Retrieves the roles assigned to a user.
-        Task<IList<string>> GetUserRolesAsync(User user);
     }
 }

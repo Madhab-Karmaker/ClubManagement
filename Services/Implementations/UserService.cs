@@ -86,23 +86,5 @@ namespace ClubManagement.Services
         {
             await _signInManager.SignOutAsync();
         }
-
-        // Adds a user to a specific role.
-        public async Task<IdentityResult> AssignRoleAsync(User user, string roleName)
-        {
-            return await _userManager.AddToRoleAsync(user, roleName);
-        }
-
-        // Removes a user from a specific role.
-        public async Task<IdentityResult> RemoveRoleAsync(User user, string roleName)
-        {
-            return await _userManager.RemoveFromRoleAsync(user, roleName);
-        }
-
-        // Gets all roles for a specified user.
-        public async Task<IList<string>> GetUserRolesAsync(User user)
-        {
-            return await _userManager.GetRolesAsync(user);
-        }
     }
 }

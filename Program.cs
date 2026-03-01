@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
