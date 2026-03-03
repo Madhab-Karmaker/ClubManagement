@@ -118,3 +118,8 @@ G:\ClubManagement\ClubManagement\bin\Debug\net8.0\runtimes\win\lib\net8.0\System
 G:\ClubManagement\ClubManagement\obj\Debug\net8.0\ClubManagement.sourcelink.json
 G:\ClubManagement\ClubManagement\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 G:\ClubManagement\ClubManagement\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+G:\ClubManagement\ClubManagement\bin\Debug\net8.0\client\package-lock.json
+G:\ClubManagement\ClubManagement\bin\Debug\net8.0\client\package.json
+G:\ClubManagement\ClubManagement\bin\Debug\net8.0\client\tsconfig.app.json
+G:\ClubManagement\ClubManagement\bin\Debug\net8.0\client\tsconfig.json
+G:\ClubManagement\ClubManagement\bin\Debug\net8.0\client\tsconfig.node.json

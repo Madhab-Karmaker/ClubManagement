@@ -1,15 +1,19 @@
 import axios from "axios";
 
-// Configure Axios instance with backend base URL
+// In development the Vite proxy forwards /api/* → https://localhost:7290
+// so we use a relative baseURL here (works for both dev and production builds).
 const api = axios.create({
-  baseURL: "https://localhost:7290", // Update to your backend URL
-  // You can add headers or withCredentials here if needed
+  baseURL: "/",
+  withCredentials: true, // needed if you later use cookie-based auth
 });
 
-// Example: GET request to an endpoint (replace '/api/endpoint' with your actual endpoint)
-export const getExample = async () => {
-  const response = await api.get("/api/endpoint");
-  return response.data;
-};
+// Attach the JWT token (if any) to every request automatically
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default api;
