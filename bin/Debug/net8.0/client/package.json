@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "swagger:download": "node -e \"const https=require('https');const fs=require('fs');const file=fs.createWriteStream('swagger.json');const req=https.get('https://localhost:7290/swagger/v1/swagger.json',{rejectUnauthorized:false},res=>{res.pipe(file);file.on('finish',()=>{file.close();console.log('swagger.json downloaded')})});req.on('error',e=>{fs.unlink('swagger.json',()=>{});console.error(e.message)})\"",
+    "swagger:generate": "openapi-ts",
+    "swagger:sync": "npm run swagger:download && npm run swagger:generate"
   },
   "dependencies": {
     "axios": "^1.13.6",
