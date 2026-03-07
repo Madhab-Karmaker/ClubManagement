@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import userService from "../services/user.service";
-import "../auth.css";
+import userService from "../../services/user.service";
+import "../../assets/styles/auth.css";
 
 export interface RegisterPageProps {
   onRegisterSuccess: () => void;

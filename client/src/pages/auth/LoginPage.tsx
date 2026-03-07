@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import authService from "../services/auth.service";
-import "../auth.css";
+import authService from "../../services/auth.service";
+import "../../assets/styles/auth.css";
 
 export interface LoginPageProps {
   onLoginSuccess: (username: string) => void;

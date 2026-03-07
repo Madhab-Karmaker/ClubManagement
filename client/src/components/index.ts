@@ -1,2 +1,4 @@
-// Shared UI components — add reusable components here.
-// Example: Button, Modal, Table, Spinner, etc.
+// Shared UI components
+export { default as Layout } from "./layout/Layout";
+export { default as Sidebar } from "./layout/Sidebar";
+export type { NavPage } from "./layout/Sidebar";

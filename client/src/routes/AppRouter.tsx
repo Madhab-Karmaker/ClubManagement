@@ -1,7 +1,7 @@
 import { useState } from "react";
-import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
-import DashboardPage from "../pages/DashboardPage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
 
 type Page = "login" | "register" | "dashboard";
 
