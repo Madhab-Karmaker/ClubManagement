@@ -46,6 +46,16 @@ const Layout: React.FC<LayoutProps> = ({
             <span />
           </button>
 
+          {activePage !== "dashboard" && (
+            <button
+              className="back-btn"
+              onClick={() => onNavigate("dashboard")}
+              aria-label="Back to dashboard"
+            >
+              ← Back
+            </button>
+          )}
+
           <span className="topbar-title">{pageTitle}</span>
 
           <div className="topbar-user-avatar" title={username}>
