@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import authService from "../../services/auth.service";
 import Layout from "../../components/layout/Layout";
 import type { NavPage } from "../../components/layout/Sidebar";
+import RolesPage from "../roles/RolesPage";
+import MembersPage from "../members/MembersPage";
 
 export interface DashboardPageProps {
   username: string;
@@ -105,6 +107,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ username, onLogout }) => 
     >
       {activePage === "dashboard" ? (
         <DashboardHome username={username} onNavigate={setActivePage} />
+      ) : activePage === "roles" ? (
+        <RolesPage />
+      ) : activePage === "members" ? (
+        <MembersPage />
       ) : (
         <PlaceholderPage
           icon={meta.icon}
