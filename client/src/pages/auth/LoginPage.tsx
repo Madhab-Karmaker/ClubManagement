@@ -1,13 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import authService from "../../services/auth.service";
+import { useAuth } from "../../context/AuthContext";
 import "../../assets/styles/auth.css";
 
-export interface LoginPageProps {
-  onLoginSuccess: (username: string) => void;
-  onGoToRegister: () => void;
-}
-
-const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onGoToRegister }) => {
+const LoginPage: React.FC = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +18,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onGoToRegister })
     setError("");
     try {
       await authService.login({ username, password });
-      onLoginSuccess(username);
+      login(username);
+      navigate("/dashboard", { replace: true });
     } catch (err: any) {
       setError(err.response?.data?.message || "Invalid username or password.");
     } finally {
@@ -83,13 +83,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onGoToRegister })
               {error && <div className="auth-error">{error}</div>}
 
               <button type="submit" className="auth-btn" disabled={loading}>
-                {loading ? "Signing in…" : "Sign In"}
+                {loading ? "Signing in\u2026" : "Sign In"}
               </button>
             </form>
 
             <div className="auth-footer">
               Don't have an account?{" "}
-              <a onClick={onGoToRegister}>Create one</a>
+              <Link to="/register">Create one</Link>
             </div>
           </div>
         </div>
@@ -99,3 +99,4 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onGoToRegister })
 };
 
 export default LoginPage;
+

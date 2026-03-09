@@ -13,6 +13,10 @@ const authService = {
   /** Ends the current session. */
   logout: () =>
     apiClient.post<{ message: string }>("/api/auth/logout"),
+
+  /** Returns the current user if a valid session exists, otherwise throws. */
+  me: () =>
+    apiClient.get<{ username: string }>("/api/auth/me"),
 };
 
 export default authService;
