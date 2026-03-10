@@ -1,74 +1,108 @@
-﻿namespace ClubManagement.Domain.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClubManagement.Domain.DTOs
 {
-    // Data transfer object for creating a member account and profile in one step.
     public class CreateMemberWithAccountDto
     {
-        // Username for the new account.
+        [Required, MaxLength(100)]
         public string Username { get; set; } = null!;
 
-        // Password for the new account.
+        [Required, MinLength(6)]
         public string Password { get; set; } = null!;
 
-        // Member's first name.
+        [Required, MaxLength(100)]
         public string FirstName { get; set; } = null!;
 
-        // Member's last name.
+        [Required, MaxLength(100)]
         public string LastName { get; set; } = null!;
 
-        // Member's email address.
+        [Required, EmailAddress, MaxLength(200)]
         public string Email { get; set; } = null!;
 
-        // Member's phone number.
+        [Required, MaxLength(20)]
         public string PhoneNumber { get; set; } = null!;
 
-        // The date the member joined.
-        public DateTime JoinDate { get; set; }
+        [MaxLength(500)]
+        public string? Address { get; set; }
 
-        // The date the membership expires.
+        [MaxLength(500)]
+        public string? ProfilePhotoUrl { get; set; }
+
+        public DateTime JoinDate { get; set; } = DateTime.UtcNow;
         public DateTime ExpiryDate { get; set; }
-
-        // Roles to assign (e.g. ["Member"] or ["Admin", "Member"]).
+        public bool IsActive { get; set; } = true;
         public List<string> Roles { get; set; } = new();
     }
 
-    // Data transfer object for creating a new member profile.
     public class CreateMemberDto
     {
-        // Member's first name.
+        [Required, MaxLength(100)]
         public string FirstName { get; set; } = null!;
 
-        // Member's last name.
+        [Required, MaxLength(100)]
         public string LastName { get; set; } = null!;
 
-        // Member's email address.
+        [Required, EmailAddress, MaxLength(200)]
         public string Email { get; set; } = null!;
 
-        // Member's phone number.
+        [Required, MaxLength(20)]
         public string PhoneNumber { get; set; } = null!;
 
-        // The date the member joined.
         public DateTime JoinDate { get; set; }
 
         // The date the membership expires.
         public DateTime ExpiryDate { get; set; }
     }
 
-    // Data transfer object for updating an existing member profile.
     public class UpdateMemberDto
     {
-        // Updated first name (optional).
+        [MaxLength(100)]
         public string? FirstName { get; set; }
 
-        // Updated last name (optional).
+        [MaxLength(100)]
         public string? LastName { get; set; }
 
-        // Updated email address (optional).
+        [EmailAddress, MaxLength(200)]
         public string? Email { get; set; }
 
-        // Updated phone number (optional).
+        [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
-        // Updated expiry date (optional).
+        [MaxLength(500)]
+        public string? Address { get; set; }
+
+        [MaxLength(500)]
+        public string? ProfilePhotoUrl { get; set; }
+
         public DateTime? ExpiryDate { get; set; }
+        public bool? IsActive { get; set; }
+        public List<string>? Roles { get; set; }
+    }
+
+    public class MemberResponseDto
+    {
+        public int MemberId { get; set; }
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string FullName => $"{FirstName} {LastName}";
+        public string Email { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
+        public string? Address { get; set; }
+        public string? ProfilePhotoUrl { get; set; }
+        public DateTime JoinDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
+        public bool IsActive { get; set; }
+        public string? UserId { get; set; }
+        public string? Username { get; set; }
+        public List<string> Roles { get; set; } = new();
+    }
+
+    public class PagedResult<T>
+    {
+        public List<T> Items { get; set; } = new();
+        public int TotalCount { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages => PageSize > 0 ? (int)Math.Ceiling((double)TotalCount / PageSize) : 0;
     }
 }

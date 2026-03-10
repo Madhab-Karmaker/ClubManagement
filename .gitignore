@@ -1,0 +1,43 @@
+# ── .NET build outputs ────────────────────────────────────────────────────────
+bin/
+obj/
+
+# User-specific Visual Studio files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# Publish output
+publish/
+**/publish/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# ── Frontend (client/) ────────────────────────────────────────────────────────
+client/node_modules/
+client/dist/
+client/dist-ssr/
+client/.local
+
+# ── Secrets / environment ─────────────────────────────────────────────────────
+appsettings.Development.json
+*.env
+.env.*
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
