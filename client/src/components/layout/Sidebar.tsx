@@ -1,24 +1,21 @@
 import React from "react";
-
-export type NavPage = "dashboard" | "members" | "roles" | "donations" | "profile";
+import { NavLink } from "react-router-dom";
 
 interface NavItem {
-  id: NavPage;
+  path: string;
   label: string;
   icon: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "dashboard",  label: "Dashboard", icon: "🏠" },
-  { id: "members",    label: "Members",   icon: "👥" },
-  { id: "roles",      label: "Roles",     icon: "🎭" },
-  { id: "donations",  label: "Donations", icon: "💰" },
-  { id: "profile",    label: "Profile",   icon: "👤" },
+  { path: "/dashboard",  label: "Dashboard", icon: "🏠" },
+  { path: "/members",    label: "Members",   icon: "👥" },
+  { path: "/roles",      label: "Roles",     icon: "🎭" },
+  { path: "/donations",  label: "Donations", icon: "💰" },
+  { path: "/profile",    label: "Profile",   icon: "👤" },
 ];
 
 interface SidebarProps {
-  activePage: NavPage;
-  onNavigate: (page: NavPage) => void;
   username: string;
   onLogout: () => void;
   isOpen: boolean;
@@ -26,18 +23,11 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  activePage,
-  onNavigate,
   username,
   onLogout,
   isOpen,
   onClose,
 }) => {
-  const handleNavigate = (page: NavPage) => {
-    onNavigate(page);
-    onClose();
-  };
-
   return (
     <>
       {/* Mobile backdrop */}
@@ -64,15 +54,17 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Nav */}
         <nav className="sidebar-nav">
           {NAV_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              className={`sidebar-nav-item${activePage === item.id ? " active" : ""}`}
-              onClick={() => handleNavigate(item.id)}
-              aria-current={activePage === item.id ? "page" : undefined}
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `sidebar-nav-item${isActive ? " active" : ""}`
+              }
+              onClick={onClose}
             >
               <span className="nav-item-icon">{item.icon}</span>
               <span className="nav-item-label">{item.label}</span>
-            </button>
+            </NavLink>
           ))}
         </nav>
 
@@ -97,3 +89,4 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
+

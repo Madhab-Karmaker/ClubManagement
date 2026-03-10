@@ -1,13 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import userService from "../../services/user.service";
 import "../../assets/styles/auth.css";
 
-export interface RegisterPageProps {
-  onRegisterSuccess: () => void;
-  onGoToLogin: () => void;
-}
-
-const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onGoToLogin }) => {
+const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +17,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onGoToLo
     setError("");
     try {
       await userService.register({ username, email, password });
-      onRegisterSuccess();
+      navigate("/login", { replace: true });
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -102,7 +99,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onGoToLo
 
             <div className="auth-footer">
               Already have an account?{" "}
-              <a onClick={onGoToLogin}>Sign in</a>
+              <Link to="/login">Sign in</Link>
             </div>
           </div>
         </div>

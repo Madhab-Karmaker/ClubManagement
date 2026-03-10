@@ -64,6 +64,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendPolicy");   // ✅ must be before UseAuthorization
+app.UseAuthentication();         // ✅ reads the session cookie
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

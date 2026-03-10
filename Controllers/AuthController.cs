@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ClubManagement.Domain.DTOs;
 using ClubManagement.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -36,5 +38,14 @@ public class AuthController : ControllerBase
     {
         await _userService.LogoutAsync();
         return Ok(new { message = "Logout successful" });
+    }
+
+    // Returns the currently authenticated user's info, used to check session validity.
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult Me()
+    {
+        var username = User.FindFirstValue(ClaimTypes.Name);
+        return Ok(new { username });
     }
 }

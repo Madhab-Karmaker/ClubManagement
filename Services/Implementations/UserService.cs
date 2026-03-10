@@ -49,13 +49,10 @@ namespace ClubManagement.Services
             return await _userManager.FindByNameAsync(username);
         }
 
-        // Validates user credentials.
+        // Validates user credentials and signs the user in (creates a session cookie).
         public async Task<bool> ValidateUserPasswordAsync(string username, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null) return false;
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            var result = await _signInManager.PasswordSignInAsync(username, password, isPersistent: true, lockoutOnFailure: false);
             return result.Succeeded;
         }
 
