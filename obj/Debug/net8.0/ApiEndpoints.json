@@ -26,6 +26,42 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "AuthController",
+    "Method": "Me",
+    "RelativePath": "api/Auth/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MemberController",
+    "Method": "GetAllMembers",
+    "RelativePath": "api/Member",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MemberController",
+    "Method": "CreateMember",
+    "RelativePath": "api/Member",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "ClubManagement.Domain.DTOs.CreateMemberWithAccountDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "ClubManagement.Controllers.ProfileController",
     "Method": "CreateMemberInfo",
     "RelativePath": "api/Profile",

@@ -57,14 +57,28 @@ namespace ClubManagement.Services
         }
 
         // Retrieves a list of all users.
-        public async Task<List<User>> GetAllUsersAsync(bool includeDeleted = false)
+        public async Task<List<UserResponseDto>> GetAllUsersAsync(bool includeDeleted = false)
         {
             var query = _userManager.Users;
             if (!includeDeleted)
             {
                 query = query.Where(u => !u.IsDeleted);
             }
-            return await query.ToListAsync();
+            var users = await query.ToListAsync();
+
+            var result = new List<UserResponseDto>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                result.Add(new UserResponseDto
+                {
+                    UserId = user.Id,
+                    Username = user.UserName!,
+                    Email = user.Email!,
+                    Roles = roles.ToList()
+                });
+            }
+            return result;
         }
 
         // Marks a user as deleted (soft delete).

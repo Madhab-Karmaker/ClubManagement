@@ -1,5 +1,36 @@
 ﻿namespace ClubManagement.Domain.DTOs
 {
+    // Data transfer object for creating a member account and profile in one step.
+    public class CreateMemberWithAccountDto
+    {
+        // Username for the new account.
+        public string Username { get; set; } = null!;
+
+        // Password for the new account.
+        public string Password { get; set; } = null!;
+
+        // Member's first name.
+        public string FirstName { get; set; } = null!;
+
+        // Member's last name.
+        public string LastName { get; set; } = null!;
+
+        // Member's email address.
+        public string Email { get; set; } = null!;
+
+        // Member's phone number.
+        public string PhoneNumber { get; set; } = null!;
+
+        // The date the member joined.
+        public DateTime JoinDate { get; set; }
+
+        // The date the membership expires.
+        public DateTime ExpiryDate { get; set; }
+
+        // Roles to assign (e.g. ["Member"] or ["Admin", "Member"]).
+        public List<string> Roles { get; set; } = new();
+    }
+
     // Data transfer object for creating a new member profile.
     public class CreateMemberDto
     {

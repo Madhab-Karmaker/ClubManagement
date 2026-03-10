@@ -41,6 +41,30 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+// ✅ Cookie behaviour: return 401/403 for API calls instead of redirecting to /Account/Login
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Prevent the cookie middleware from redirecting API requests to a login page
+    options.Events.OnRedirectToLogin = ctx =>
+    {
+        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = ctx =>
+    {
+        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+
+    // In development the Vite proxy serves over HTTP, so drop the Secure flag
+    // so the browser can store the cookie without HTTPS
+    if (builder.Environment.IsDevelopment())
+    {
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    }
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
