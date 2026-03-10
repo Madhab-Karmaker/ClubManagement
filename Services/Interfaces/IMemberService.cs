@@ -3,22 +3,27 @@ using ClubManagement.Domain.Models;
 
 namespace ClubManagement.Services.Interfaces
 {
-    // Defines operations for managing club member profiles.
     public interface IMemberService
     {
-        // Retrieves all member profiles.
-        Task<IEnumerable<Member>> GetAllMembersAsync();
+        // Paginated list with optional search, role, and status filters.
+        Task<PagedResult<MemberResponseDto>> GetPagedMembersAsync(
+            string? search, string? role, bool? isActive, int page, int pageSize);
 
-        // Retrieves a member profile by their associated user ID.
+        // Retrieve a single member profile by their Member ID.
+        Task<MemberResponseDto?> GetMemberByIdAsync(int memberId);
+
+        // Create a user account and linked member profile in one operation.
+        Task<MemberResponseDto> CreateMemberWithAccountAsync(CreateMemberWithAccountDto dto);
+
+        // Update a member profile (and optionally roles) by Member ID.
+        Task<MemberResponseDto?> UpdateMemberByIdAsync(int memberId, UpdateMemberDto dto);
+
+        // Hard-delete a member (soft-deletes associated user account).
+        Task<bool> DeleteMemberAsync(int memberId);
+
+        // ── Legacy methods used by ProfileController ──────────────────────
         Task<Member?> GetMemberByUserIdAsync(string userId);
-
-        // Creates an Identity user, assigns roles, and creates the linked member profile.
-        Task<Member> CreateMemberWithAccountAsync(CreateMemberWithAccountDto dto);
-
-        // Creates a new member profile for a user.
         Task<Member> CreateMemberAsync(string userId, CreateMemberDto dto);
-
-        // Updates an existing member profile.
         Task<Member?> UpdateMemberAsync(string userId, UpdateMemberDto dto);
     }
 }

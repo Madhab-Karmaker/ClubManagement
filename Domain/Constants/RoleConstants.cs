@@ -8,5 +8,8 @@ namespace ClubManagement.Domain.Constants
 
         // Standard member role with limited access permissions.
         public const string Member = "Member";
+
+        // Manager role with elevated access permissions.
+        public const string Manager = "Manager";
     }
 }

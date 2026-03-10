@@ -14,7 +14,7 @@ namespace ClubManagement.Infrastructure.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
             // Seed Roles
-            string[] roles = { RoleConstants.Admin, RoleConstants.Member };
+            string[] roles = { RoleConstants.Admin, RoleConstants.Manager, RoleConstants.Member };
 
             foreach (var roleName in roles)
             {
