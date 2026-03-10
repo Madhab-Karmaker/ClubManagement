@@ -17,7 +17,7 @@ namespace ClubManagement.Services.Interfaces
         Task<bool> ValidateUserPasswordAsync(string username, string password);
 
         // Retrieves all users in the system.
-        Task<List<User>> GetAllUsersAsync(bool includeDeleted = false);
+        Task<List<UserResponseDto>> GetAllUsersAsync(bool includeDeleted = false);
 
         // Soft-deletes a user from the system.
         Task<bool> DeleteUserAsync(string userId);
