@@ -14,6 +14,9 @@
         public bool IsActive { get; set; } = true;
         public string? UserId { get; set; }
         public User? User { get; set; }
+
+        // Navigation
+        public ICollection<Donation> Donations { get; set; } = new List<Donation>();
     }
 }
 

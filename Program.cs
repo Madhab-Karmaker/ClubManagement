@@ -29,6 +29,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IDonationService, DonationService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // ✅ Identity setup
