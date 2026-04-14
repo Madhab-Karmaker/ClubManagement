@@ -9,6 +9,11 @@ export interface CreateRolePayload {
   roleName: string;
 }
 
+export interface UpdateRolePayload {
+  roleId: string;
+  newRoleName: string;
+}
+
 export interface UserRolePayload {
   username: string;
   roleName: string;
@@ -18,9 +23,21 @@ const roleService = {
   /** Retrieves all roles defined in the system. */
   getAll: () => apiClient.get<RoleResponse[]>("/api/role"),
 
+  /** Retrieves a role by ID. */
+  getById: (roleId: string) =>
+    apiClient.get<RoleResponse>(`/api/role/${encodeURIComponent(roleId)}`),
+
+  /** Retrieves a role by name. */
+  getByName: (roleName: string) =>
+    apiClient.get<RoleResponse>(`/api/role/name/${encodeURIComponent(roleName)}`),
+
   /** Creates a new role. */
   create: (data: CreateRolePayload) =>
     apiClient.post<{ message: string }>("/api/role", data),
+
+  /** Updates an existing role. */
+  update: (data: UpdateRolePayload) =>
+    apiClient.put<{ message: string }>("/api/role", data),
 
   /** Deletes a role by name. */
   delete: (roleName: string) =>

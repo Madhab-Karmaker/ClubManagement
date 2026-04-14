@@ -7,6 +7,16 @@ namespace ClubManagement.Domain.DTOs
         public string RoleName { get; set; } = null!;
     }
 
+    // Data transfer object for updating role information.
+    public class UpdateRoleDto
+    {
+        // The ID of the role to update.
+        public string RoleId { get; set; } = null!;
+
+        // The new name for the role.
+        public string NewRoleName { get; set; } = null!;
+    }
+
     // Data transfer object for assigning or removing roles from users.
     public class UserRoleDto
     {

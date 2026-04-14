@@ -35,6 +35,37 @@ namespace ClubManagement.Services.Implementations
             return await _roleManager.Roles.ToListAsync();
         }
 
+        // Retrieves a role by its ID.
+        public async Task<IdentityRole?> GetRoleByIdAsync(string roleId)
+        {
+            return await _roleManager.FindByIdAsync(roleId);
+        }
+
+        // Retrieves a role by its name.
+        public async Task<IdentityRole?> GetRoleByNameAsync(string roleName)
+        {
+            return await _roleManager.FindByNameAsync(roleName);
+        }
+
+        // Updates an existing role with a new name.
+        public async Task<IdentityResult> UpdateRoleAsync(string roleId, string newRoleName)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "Role not found." });
+            }
+
+            if (await _roleManager.RoleExistsAsync(newRoleName))
+            {
+                return IdentityResult.Failed(new IdentityError { Description = $"Role '{newRoleName}' already exists." });
+            }
+
+            role.Name = newRoleName;
+            role.NormalizedName = newRoleName.ToUpper();
+            return await _roleManager.UpdateAsync(role);
+        }
+
         // Deletes an identity role by name.
         public async Task<IdentityResult> DeleteRoleAsync(string roleName)
         {

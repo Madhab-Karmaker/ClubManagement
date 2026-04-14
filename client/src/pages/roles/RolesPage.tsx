@@ -19,6 +19,77 @@ const FeedbackBanner: React.FC<FeedbackBannerProps> = ({ message, type, onDismis
   </div>
 );
 
+/* ─── Create Role Modal ─────────────────────────────────────── */
+
+interface CreateRoleModalProps {
+  onClose: () => void;
+  onSave: (roleName: string) => Promise<void>;
+  saving: boolean;
+}
+
+const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ onClose, onSave, saving }) => {
+  const [roleName, setRoleName] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = roleName.trim();
+    if (!trimmed) return;
+    await onSave(trimmed);
+  };
+
+  return (
+    <div
+      className="mm-overlay"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="mm-modal" style={{ maxWidth: "400px" }}>
+        <div className="mm-modal__header">
+          <h2 className="mm-modal__title">Create New Role</h2>
+          <button
+            className="mm-modal__close"
+            onClick={onClose}
+            aria-label="Close"
+            disabled={saving}
+          >
+            ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: "24px" }}>
+          <div className="form-group">
+            <label htmlFor="roleName">Role Name</label>
+            <input
+              id="roleName"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Admin, Manager, Member"
+              value={roleName}
+              onChange={(e) => setRoleName(e.target.value)}
+              required
+              autoFocus
+              disabled={saving}
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
+            <button className="btn btn--primary" type="submit" disabled={saving}>
+              {saving ? "Creating…" : "Create Role"}
+            </button>
+            <button
+              className="btn btn--secondary"
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 /* ─── Main component ─────────────────────────────────────── */
 
 const RolesPage: React.FC = () => {
@@ -29,8 +100,13 @@ const RolesPage: React.FC = () => {
   const [feedback, setFeedback] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   // Create role
-  const [newRoleName, setNewRoleName] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [creating, setCreating] = useState(false);
+
+  // Edit role
+  const [editingRole, setEditingRole] = useState<RoleResponse | null>(null);
+  const [editRoleName, setEditRoleName] = useState("");
+  const [updating, setUpdating] = useState(false);
 
   // Assign / Remove role from user
   const [assignUsername, setAssignUsername] = useState("");
@@ -65,15 +141,12 @@ const RolesPage: React.FC = () => {
 
   /* ── Handlers ─────────────────────────────────────────── */
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = newRoleName.trim();
-    if (!trimmed) return;
+  const handleCreateRole = async (roleName: string) => {
     setCreating(true);
     try {
-      const { data } = await roleService.create({ roleName: trimmed });
+      const { data } = await roleService.create({ roleName });
       showFeedback(data.message, "success");
-      setNewRoleName("");
+      setShowCreateModal(false);
       await loadRoles();
     } catch (err: any) {
       const msg = err?.response?.data?.[0]?.description ?? "Failed to create role.";
@@ -92,6 +165,39 @@ const RolesPage: React.FC = () => {
     } catch (err: any) {
       const msg = err?.response?.data?.[0]?.description ?? "Failed to delete role.";
       showFeedback(msg, "error");
+    }
+  };
+
+  const handleEditClick = (role: RoleResponse) => {
+    setEditingRole(role);
+    setEditRoleName(role.name);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingRole(null);
+    setEditRoleName("");
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRole) return;
+    const trimmed = editRoleName.trim();
+    if (!trimmed) return;
+    setUpdating(true);
+    try {
+      const { data } = await roleService.update({
+        roleId: editingRole.id,
+        newRoleName: trimmed,
+      });
+      showFeedback(data.message, "success");
+      setEditingRole(null);
+      setEditRoleName("");
+      await loadRoles();
+    } catch (err: any) {
+      const msg = err?.response?.data?.[0]?.description ?? "Failed to update role.";
+      showFeedback(msg, "error");
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -149,7 +255,15 @@ const RolesPage: React.FC = () => {
 
       {/* ── Roles list ───────────────────────────────────── */}
       <section className="roles-section">
-        <h2 className="roles-section__title">All Roles</h2>
+        <div className="roles-section__header">
+          <h2 className="roles-section__title">All Roles</h2>
+          <button 
+            className="btn btn--primary" 
+            onClick={() => setShowCreateModal(true)}
+          >
+            ➕ Add Role
+          </button>
+        </div>
 
         {loading ? (
           <p className="roles-loading">Loading roles…</p>
@@ -171,6 +285,13 @@ const RolesPage: React.FC = () => {
                   <td className="roles-table__id">{role.id}</td>
                   <td>
                     <button
+                      className="btn btn--primary btn--sm"
+                      onClick={() => handleEditClick(role)}
+                      style={{ marginRight: "8px" }}
+                    >
+                      Edit
+                    </button>
+                    <button
                       className="btn btn--danger btn--sm"
                       onClick={() => handleDelete(role.name)}
                     >
@@ -185,27 +306,39 @@ const RolesPage: React.FC = () => {
       </section>
 
       <div className="roles-forms">
-        {/* ── Create role ────────────────────────────────── */}
-        <section className="roles-section roles-section--card">
-          <h2 className="roles-section__title">Create Role</h2>
-          <form className="roles-form" onSubmit={handleCreate}>
-            <div className="form-group">
-              <label htmlFor="newRoleName">Role Name</label>
-              <input
-                id="newRoleName"
-                type="text"
-                className="form-input"
-                placeholder="e.g. Admin"
-                value={newRoleName}
-                onChange={(e) => setNewRoleName(e.target.value)}
-                required
-              />
-            </div>
-            <button className="btn btn--primary" type="submit" disabled={creating}>
-              {creating ? "Creating…" : "Create Role"}
-            </button>
-          </form>
-        </section>
+        {/* ── Edit role (shown when editing) ───────────────── */}
+        {editingRole && (
+          <section className="roles-section roles-section--card roles-section--highlight">
+            <h2 className="roles-section__title">Edit Role</h2>
+            <form className="roles-form" onSubmit={handleUpdate}>
+              <div className="form-group">
+                <label htmlFor="editRoleName">Role Name</label>
+                <input
+                  id="editRoleName"
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter new role name"
+                  value={editRoleName}
+                  onChange={(e) => setEditRoleName(e.target.value)}
+                  required
+                />
+              </div>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button className="btn btn--primary" type="submit" disabled={updating}>
+                  {updating ? "Updating…" : "Update Role"}
+                </button>
+                <button
+                  className="btn btn--secondary"
+                  type="button"
+                  onClick={handleCancelEdit}
+                  disabled={updating}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
 
         {/* ── Assign role to user ─────────────────────────── */}
         <section className="roles-section roles-section--card">
@@ -285,6 +418,15 @@ const RolesPage: React.FC = () => {
           </form>
         </section>
       </div>
+
+      {/* ── Create Role Modal ───────────────────────────────── */}
+      {showCreateModal && (
+        <CreateRoleModal
+          onClose={() => setShowCreateModal(false)}
+          onSave={handleCreateRole}
+          saving={creating}
+        />
+      )}
     </div>
   );
 };

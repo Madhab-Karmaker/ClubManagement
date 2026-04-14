@@ -39,6 +39,45 @@ namespace ClubManagement.Controllers
             return Ok(roles);
         }
 
+        // Retrieves a specific role by ID.
+        [HttpGet("{roleId}")]
+        public async Task<IActionResult> GetRoleById(string roleId)
+        {
+            var role = await _roleService.GetRoleByIdAsync(roleId);
+            if (role == null)
+                return NotFound(new { message = "Role not found" });
+
+            return Ok(role);
+        }
+
+        // Retrieves a specific role by name.
+        [HttpGet("name/{roleName}")]
+        public async Task<IActionResult> GetRoleByName(string roleName)
+        {
+            var role = await _roleService.GetRoleByNameAsync(roleName);
+            if (role == null)
+                return NotFound(new { message = "Role not found" });
+
+            return Ok(role);
+        }
+
+        // Updates an existing role with a new name.
+        [HttpPut]
+        public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.RoleId))
+                return BadRequest(new { message = "Role ID is required" });
+
+            if (string.IsNullOrWhiteSpace(dto.NewRoleName))
+                return BadRequest(new { message = "New role name is required" });
+
+            var result = await _roleService.UpdateRoleAsync(dto.RoleId, dto.NewRoleName);
+            if (result.Succeeded)
+                return Ok(new { message = $"Role updated successfully to '{dto.NewRoleName}'" });
+
+            return BadRequest(result.Errors);
+        }
+
         // Deletes a specific role by name.
         [HttpDelete("{roleName}")]
         public async Task<IActionResult> DeleteRole(string roleName)

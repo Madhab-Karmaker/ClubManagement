@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "swagger:download": "node -e \"const https=require('https');const fs=require('fs');const file=fs.createWriteStream('swagger.json');const req=https.get('https://localhost:7290/swagger/v1/swagger.json',{rejectUnauthorized:false},res=>{res.pipe(file);file.on('finish',()=>{file.close();console.log('swagger.json downloaded')})});req.on('error',e=>{fs.unlink('swagger.json',()=>{});console.error(e.message)})\"",
-    "swagger:generate": "openapi-typescript swagger.json -o src/api/generated/types.ts",
+    "swagger:generate": "openapi-ts",
     "swagger:sync": "npm run swagger:download && npm run swagger:generate"
   },
   "dependencies": {
@@ -29,7 +29,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
-    "openapi-typescript": "^7.13.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
     "vite": "^8.0.0-beta.13"
