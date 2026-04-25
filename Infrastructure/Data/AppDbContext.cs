@@ -1,5 +1,4 @@
 using ClubManagement.Domain.Models;
-using ClubManagement.Domain.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +12,7 @@ namespace ClubManagement.Infrastructure.Data
         public DbSet<Member> Members { get; set; } = null!;
         public DbSet<Donation> Donations { get; set; } = null!;
         public DbSet<DonationCategory> DonationCategories { get; set; } = null!;
-        public DbSet<PaymentMethodLookup> PaymentMethods { get; set; } = null!;
+        public DbSet<PaymentMethodLookup> PaymentMethodLookups { get; set; } = null!;
         public DbSet<DonationStatus> DonationStatuses { get; set; } = null!;
         public DbSet<DonationStatistic> DonationStatistics { get; set; } = null!;
         public DbSet<MonthlySummary> MonthlySummaries { get; set; } = null!;
@@ -77,6 +76,7 @@ namespace ClubManagement.Infrastructure.Data
             // ============================================================================
             modelBuilder.Entity<PaymentMethodLookup>(entity =>
             {
+                entity.ToTable("PaymentMethods");
                 entity.HasKey(e => e.PaymentMethodId);
                 entity.Property(e => e.MethodName).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Description).HasMaxLength(200);
@@ -123,14 +123,32 @@ namespace ClubManagement.Infrastructure.Data
                     .HasForeignKey(e => e.MemberId)
                     .OnDelete(DeleteBehavior.Cascade);
 
+                entity.HasOne(e => e.Status)
+                    .WithMany(s => s.Donations)
+                    .HasForeignKey(e => e.StatusId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Category)
+                    .WithMany(c => c.Donations)
+                    .HasForeignKey(e => e.CategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.PaymentMethodLookup)
+                    .WithMany(p => p.Donations)
+                    .HasForeignKey(e => e.PaymentMethodId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 // Indexes
                 entity.HasIndex(e => e.MemberId);
                 entity.HasIndex(e => e.DonationDate);
                 entity.HasIndex(e => e.CreatedAt);
                 entity.HasIndex(e => e.Amount);
+                entity.HasIndex(e => e.StatusId);
+                entity.HasIndex(e => e.CategoryId);
+                entity.HasIndex(e => e.PaymentMethodId);
 
                 // Check constraint for positive amount
-                entity.HasCheckConstraint("CK_Donation_Amount", "Amount > 0");
+                entity.HasCheckConstraint("CK_Donation_Amount", "\"Amount\" > 0");
             });
 
             // ============================================================================

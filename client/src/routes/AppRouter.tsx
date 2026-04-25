@@ -6,7 +6,8 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import MembersPage from "../pages/members/MembersPage";
 import RolesPage from "../pages/roles/RolesPage";
-import DonationDashboard from "../pages/donations/DonationDashboard";
+import PaymentMethodsPage from "../pages/paymentmethods/PaymentMethodsPage";
+import DonationDashboard from "../pages/donations/DonationDashboard.tsx";
 import ProtectedLayout from "../components/layout/ProtectedLayout";
 
 /** Redirects unauthenticated users to /login */
@@ -34,6 +35,7 @@ const AppRouter = () => (
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/members" element={<MembersPage />} />
       <Route path="/roles" element={<RolesPage />} />
+      <Route path="/payment-methods" element={<PaymentMethodsPage />} />
       <Route path="/donations" element={<DonationDashboard />} />
       <Route path="/profile" element={<PlaceholderPage icon="👤" title="Profile" description="View and edit your profile" />} />
     </Route>

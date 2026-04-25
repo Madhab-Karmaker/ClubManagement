@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { type DonationRecord } from '../../types/donation.types.ts';
-import { formatBDT, formatDate, getDaysAgo } from '../../services/donation.service';
+import { formatBDT, getDaysAgo } from '../../services/donation.service';
 
 interface TopDonorsTableProps {
   donations: DonationRecord[];
@@ -71,7 +71,7 @@ const TopDonorsTable: React.FC<TopDonorsTableProps> = ({ donations }) => {
             </tr>
           </thead>
           <tbody>
-            {paginatedDonors.map((donor, idx) => (
+            {paginatedDonors.map((donor, _idx) => (
               <tr key={donor.record.donorId} className="donation-table-row">
                 <td>
                   <div className="donation-donor-cell">

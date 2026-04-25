@@ -1,5 +1,3 @@
-using ClubManagement.Domain.Constants;
-
 namespace ClubManagement.Domain.Models
 {
     public class Donation
@@ -19,15 +17,6 @@ namespace ClubManagement.Domain.Models
 
         public string? Note { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        // ============================================================
-        // LEGACY FIELDS (Keep for backward compatibility - Mark Obsolete)
-        // ============================================================
-        [Obsolete("Use CategoryId with DonationCategory table instead")]
-        public DonationType DonationType { get; set; }
-
-        [Obsolete("Use PaymentMethodId with PaymentMethodLookup table instead")]
-        public PaymentMethod PaymentMethod { get; set; }
 
         // ============================================================
         // NEW FIELDS FOR DASHBOARD SYSTEM

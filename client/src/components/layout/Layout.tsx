@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
-import type { NavPage } from "./Sidebar";
 import "../../assets/styles/dashboard.css";
 
 interface LayoutProps {
   username: string;
   onLogout: () => void;
-  activePage: NavPage;
-  onNavigate: (page: NavPage) => void;
   pageTitle: string;
   children: React.ReactNode;
 }
@@ -15,8 +12,6 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({
   username,
   onLogout,
-  activePage,
-  onNavigate,
   pageTitle,
   children,
 }) => {
@@ -25,8 +20,6 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <div className="app-layout">
       <Sidebar
-        activePage={activePage}
-        onNavigate={onNavigate}
         username={username}
         onLogout={onLogout}
         isOpen={sidebarOpen}
@@ -45,16 +38,6 @@ const Layout: React.FC<LayoutProps> = ({
             <span />
             <span />
           </button>
-
-          {activePage !== "dashboard" && (
-            <button
-              className="back-btn"
-              onClick={() => onNavigate("dashboard")}
-              aria-label="Back to dashboard"
-            >
-              ← Back
-            </button>
-          )}
 
           <span className="topbar-title">{pageTitle}</span>
 

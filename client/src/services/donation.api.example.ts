@@ -6,7 +6,7 @@
  */
 
 import apiClient from '../api/apiClient';
-import { DonationData, DonationRecord, DonorProfile } from '../types/donation.types';
+import { type DonationData, type DonationRecord, type DonorProfile } from '../types/donation.types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // REAL API INTEGRATION EXAMPLE

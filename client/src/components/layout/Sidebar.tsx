@@ -8,11 +8,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { path: "/dashboard",  label: "Dashboard", icon: "🏠" },
-  { path: "/members",    label: "Members",   icon: "👥" },
-  { path: "/roles",      label: "Roles",     icon: "🎭" },
-  { path: "/donations",  label: "Donations", icon: "💰" },
-  { path: "/profile",    label: "Profile",   icon: "👤" },
+  { path: "/dashboard",      label: "Dashboard",        icon: "🏠" },
+  { path: "/members",        label: "Members",          icon: "👥" },
+  { path: "/roles",          label: "Roles",            icon: "🎭" },
+  { path: "/payment-methods", label: "Payment Methods", icon: "💳" },
+  { path: "/donations",      label: "Donations",        icon: "💰" },
+  { path: "/profile",        label: "Profile",          icon: "👤" },
 ];
 
 interface SidebarProps {

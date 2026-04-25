@@ -11,7 +11,7 @@
 import React, { useEffect, useState } from "react";
 
 // ─── Approach A: hand-written service (works right now) ──────────────────────
-import userService, { UserResponse } from "../services/user.service";
+import userService, { type UserResponse } from "../services/user.service";
 
 // ─── Approach B: generated client (uncomment after running swagger:sync) ──────
 // import { UserService }    from "../api/generated";

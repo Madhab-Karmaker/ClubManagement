@@ -7,7 +7,7 @@ namespace ClubManagement.Domain.Constants
         Event   = 3
     }
 
-    public enum PaymentMethod
+    public enum PaymentMethodType
     {
         Cash  = 1,
         Bkash = 2,

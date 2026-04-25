@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import SummaryCards from '../../components/donations/SummaryCards';
-import DonationAnalytics from '../../components/donations/DonationAnalytics';
-import RecentDonationsFeed from '../../components/donations/RecentDonationsFeed';
-import TopDonorsTable from '../../components/donations/TopDonorsTable';
-import TopDonorLeaderboard from '../../components/donations/TopDonorLeaderboard';
-import DonationFilters from '../../components/donations/DonationFilters';
-import { type DonationData, type DonationRecord } from '../../types/donation.types.ts';
-import { getDummyDonationData } from '../../services/donation.service';
+import SummaryCards from '../../components/donations/SummaryCards.tsx';
+import DonationAnalytics from '../../components/donations/DonationAnalytics.tsx';
+import RecentDonationsFeed from '../../components/donations/RecentDonationsFeed.tsx';
+import TopDonorsTable from '../../components/donations/TopDonorsTable.tsx';
+import TopDonorLeaderboard from '../../components/donations/TopDonorLeaderboard.tsx';
+import DonationFilters from '../../components/donations/DonationFilters.tsx';
+import { type DonationData } from '../../types/donation.types.ts';
+import { getDummyDonationData } from '../../services/donation.service.ts';
 import '../../assets/styles/donations.css';
 
 const DonationDashboard: React.FC = () => {

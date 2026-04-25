@@ -91,7 +91,6 @@ const LineChart: React.FC<{ data: Array<{ date: string; amount: number }> }> = (
  */
 const BarChart: React.FC<{ data: Array<{ label: string; value: number }> }> = ({ data }) => {
   const maxValue = Math.max(...data.map((d) => d.value), 1);
-  const barWidth = 100 / data.length;
 
   return (
     <div className="donation-bar-chart">
@@ -186,7 +185,7 @@ const PieChart: React.FC<{ data: Array<{ name: string; percentage: number; amoun
   );
 };
 
-const DonationAnalytics: React.FC<DonationAnalyticsProps> = ({ data, filteredDonations, dateRange }) => {
+const DonationAnalytics: React.FC<DonationAnalyticsProps> = ({ data, filteredDonations }) => {
   // Get last 10 days of data for line chart
   const last10Days = useMemo(() => {
     return data.dailyDonations.slice(-10);

@@ -6,7 +6,6 @@ import { type DonationData, type DonationRecord, type DonorProfile } from '../ty
  */
 export function getDummyDonationData(): DonationData {
   const now = new Date();
-  const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   // Generate realistic donor data
   const donorNames = [
@@ -53,7 +52,7 @@ export function getDummyDonationData(): DonationData {
   });
 
   const topDonors: DonorProfile[] = Array.from(donorMap.entries())
-    .map(([id, data], idx) => ({
+    .map(([id, data]) => ({
       id,
       name: data.name,
       email: `${data.name.toLowerCase().replace(' ', '.')}@example.com`,
@@ -61,7 +60,7 @@ export function getDummyDonationData(): DonationData {
       profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name}`,
       totalDonation: data.totalAmount,
       lastDonation: data.lastDate,
-      status: Math.random() > 0.15 ? 'active' : 'inactive',
+      status: (Math.random() > 0.15 ? 'active' : 'inactive') as 'active' | 'inactive',
       donationCount: data.count,
       joinDate: new Date(now.getTime() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     }))

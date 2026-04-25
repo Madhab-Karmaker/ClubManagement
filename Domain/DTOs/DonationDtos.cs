@@ -11,10 +11,10 @@ namespace ClubManagement.Domain.DTOs
         public int? MemberId { get; set; }
 
         /// <summary>Filter by donation type.</summary>
-        public DonationType? DonationType { get; set; }
+        public int? CategoryId { get; set; } 
 
         /// <summary>Filter by payment method.</summary>
-        public PaymentMethod? PaymentMethod { get; set; }
+        public PaymentMethodType? PaymentMethod { get; set; }
 
         /// <summary>From date (inclusive).</summary>
         public DateTime? FromDate { get; set; }
@@ -45,10 +45,12 @@ namespace ClubManagement.Domain.DTOs
         public decimal Amount { get; set; }
 
         [Required]
-        public DonationType DonationType { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "CategoryId must be a positive integer.")]
+        public int CategoryId { get; set; }
 
         [Required]
-        public PaymentMethod PaymentMethod { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "PaymentMethodId must be a positive integer.")]
+        public int PaymentMethodId { get; set; }
 
         [MaxLength(100)]
         public string? ReferenceNumber { get; set; }
@@ -68,7 +70,7 @@ namespace ClubManagement.Domain.DTOs
         public int MemberId { get; set; }
         public string MemberFullName { get; set; } = null!;
         public decimal Amount { get; set; }
-        public string DonationType { get; set; } = null!;
+        public string CategoryName { get; set; } = null!;
         public string PaymentMethod { get; set; } = null!;
         public string? ReferenceNumber { get; set; }
         public DateTime DonationDate { get; set; }
