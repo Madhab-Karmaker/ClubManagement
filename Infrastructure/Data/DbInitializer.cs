@@ -1,37 +1,76 @@
 using ClubManagement.Domain.Constants;
 using ClubManagement.Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ClubManagement.Infrastructure.Data
 {
-    // Provides methods to initialize the database with default data.
+    /// <summary>
+    /// Seeds default roles and optional admin user.
+    /// </summary>
     public static class DbInitializer
     {
-        // Seeds the database with default roles (Admin, Member) if they do not exist.
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            using var scope = serviceProvider.CreateScope();
+
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+            // Default system roles
+            string[] roles =
+            {
+                RoleConstants.Admin,
+                RoleConstants.Manager,
+                RoleConstants.Member
+            };
 
             // Seed Roles
-            string[] roles = { RoleConstants.Admin, RoleConstants.Manager, RoleConstants.Member };
-
             foreach (var roleName in roles)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                    var roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+
+                    if (!roleResult.Succeeded)
+                    {
+                        var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Failed to create role '{roleName}': {errors}");
+                    }
                 }
             }
 
-            // Optional: Seed an initial Admin user if needed
-            // var adminEmail = "admin@club.com";
-            // if (await userManager.FindByEmailAsync(adminEmail) == null)
-            // {
-            //     var adminUser = new User { UserName = "admin", Email = adminEmail };
-            //     await userManager.CreateAsync(adminUser, "Admin@123");
-            //     await userManager.AddToRoleAsync(adminUser, RoleConstants.Admin);
-            // }
+            // Seed Default Admin User
+            var adminEmail = "admin@club.com";
+            var adminUserName = "admin";
+
+            var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+
+            if (existingAdmin == null)
+            {
+                var adminUser = new User
+                {
+                    UserName = adminUserName,
+                    Email = adminEmail,
+                    EmailConfirmed = true
+                };
+
+                var userResult = await userManager.CreateAsync(adminUser, "Admin@123");
+
+                if (!userResult.Succeeded)
+                {
+                    var errors = string.Join(", ", userResult.Errors.Select(e => e.Description));
+                    throw new Exception($"Failed to create admin user: {errors}");
+                }
+
+                var roleAssignResult = await userManager.AddToRoleAsync(adminUser, RoleConstants.Admin);
+
+                if (!roleAssignResult.Succeeded)
+                {
+                    var errors = string.Join(", ", roleAssignResult.Errors.Select(e => e.Description));
+                    throw new Exception($"Failed to assign Admin role: {errors}");
+                }
+            }
         }
     }
 }

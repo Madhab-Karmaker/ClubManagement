@@ -1,12 +1,15 @@
 import React from 'react';
 import { type DonationRecord } from '../../types/donation.types.ts';
-import { formatBDT, getDaysAgo } from '../../services/donation.service';
+import { formatBDT, getDaysAgo } from '../../services/donation.service.ts';
 
 interface RecentDonationsFeedProps {
   donations: DonationRecord[];
 }
 
 const RecentDonationsFeed: React.FC<RecentDonationsFeedProps> = ({ donations }) => {
+  const normalizeKey = (value: string) =>
+    value.toLowerCase().replace(/[\s_-]+/g, '');
+
   const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {
       general: '🎁',
@@ -14,7 +17,7 @@ const RecentDonationsFeed: React.FC<RecentDonationsFeedProps> = ({ donations }) 
       cause: '❤️',
       project: '🏗️',
     };
-    return icons[category] || '💰';
+    return icons[normalizeKey(category)] || '💰';
   };
 
   const getPaymentMethodIcon = (method: string) => {
@@ -22,9 +25,9 @@ const RecentDonationsFeed: React.FC<RecentDonationsFeedProps> = ({ donations }) 
       cash: '💵',
       online: '💳',
       cheque: '📄',
-      bank_transfer: '🏦',
+      banktransfer: '🏦',
     };
-    return icons[method] || '💰';
+    return icons[normalizeKey(method)] || '💰';
   };
 
   if (donations.length === 0) {
@@ -75,7 +78,7 @@ const RecentDonationsFeed: React.FC<RecentDonationsFeedProps> = ({ donations }) 
                   {getCategoryIcon(donation.category)} {donation.category}
                 </span>
                 <span className="donation-feed-badge donation-feed-method">
-                  {getPaymentMethodIcon(donation.paymentMethod)} {donation.paymentMethod.replace('_', ' ')}
+                  {getPaymentMethodIcon(donation.paymentMethod)} {donation.paymentMethod}
                 </span>
                 <span className={`donation-feed-badge donation-feed-status donation-feed-status--${donation.status}`}>
                   {donation.status === 'completed' ? '✓' : '⏳'} {donation.status}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import SummaryCards from '../../components/donations/SummaryCards.tsx';
 import DonationAnalytics from '../../components/donations/DonationAnalytics.tsx';
 import RecentDonationsFeed from '../../components/donations/RecentDonationsFeed.tsx';
@@ -7,6 +7,8 @@ import TopDonorLeaderboard from '../../components/donations/TopDonorLeaderboard.
 import DonationFilters from '../../components/donations/DonationFilters.tsx';
 import { type DonationData } from '../../types/donation.types.ts';
 import { getDummyDonationData } from '../../services/donation.service.ts';
+import donationCategoryService, { type DonationCategoryResponse } from '../../services/donationcategory.service.ts';
+import paymentMethodService, { type PaymentMethodResponse } from '../../services/paymentmethod.service.ts';
 import '../../assets/styles/donations.css';
 
 const DonationDashboard: React.FC = () => {
@@ -15,9 +17,28 @@ const DonationDashboard: React.FC = () => {
   const [sortBy, setSortBy] = useState<'amount' | 'recent'>('recent');
   const [customDateStart, setCustomDateStart] = useState<string>('');
   const [customDateEnd, setCustomDateEnd] = useState<string>('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | ''>('');
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<number | ''>('');
+  const [categoryOptions, setCategoryOptions] = useState<DonationCategoryResponse[]>([]);
+  const [paymentMethodOptions, setPaymentMethodOptions] = useState<PaymentMethodResponse[]>([]);
 
   // Get dummy data
   const data: DonationData = getDummyDonationData();
+
+  useEffect(() => {
+    donationCategoryService
+      .getAll()
+      .then(({ data }) => setCategoryOptions(data.filter((x) => x.isActive)))
+      .catch(() => setCategoryOptions([]));
+
+    paymentMethodService
+      .getAll()
+      .then(({ data }) => setPaymentMethodOptions(data.filter((x) => x.isActive)))
+      .catch(() => setPaymentMethodOptions([]));
+  }, []);
+
+  const normalizeLookupName = (value: string) =>
+    value.toLowerCase().replace(/[\s_-]+/g, '');
 
   // Filter donations based on date range
   const filteredDonations = useMemo(() => {
@@ -46,6 +67,22 @@ const DonationDashboard: React.FC = () => {
       );
     }
 
+    if (selectedCategoryId !== '') {
+      const selectedCategory = categoryOptions.find((x) => x.id === selectedCategoryId);
+      if (selectedCategory) {
+        const selectedName = normalizeLookupName(selectedCategory.categoryName);
+        filtered = filtered.filter((d) => normalizeLookupName(d.category) === selectedName);
+      }
+    }
+
+    if (selectedPaymentMethodId !== '') {
+      const selectedMethod = paymentMethodOptions.find((x) => x.id === selectedPaymentMethodId);
+      if (selectedMethod) {
+        const selectedName = normalizeLookupName(selectedMethod.name);
+        filtered = filtered.filter((d) => normalizeLookupName(d.paymentMethod) === selectedName);
+      }
+    }
+
     // Sort
     if (sortBy === 'amount') {
       filtered.sort((a, b) => b.amount - a.amount);
@@ -54,7 +91,18 @@ const DonationDashboard: React.FC = () => {
     }
 
     return filtered;
-  }, [dateRange, searchQuery, sortBy, customDateStart, customDateEnd, data.recentDonations]);
+  }, [
+    dateRange,
+    searchQuery,
+    sortBy,
+    customDateStart,
+    customDateEnd,
+    data.recentDonations,
+    selectedCategoryId,
+    selectedPaymentMethodId,
+    categoryOptions,
+    paymentMethodOptions,
+  ]);
 
   // Calculate summary stats
   const summaryStats = useMemo(() => {
@@ -99,6 +147,12 @@ const DonationDashboard: React.FC = () => {
         setCustomDateStart={setCustomDateStart}
         customDateEnd={customDateEnd}
         setCustomDateEnd={setCustomDateEnd}
+        selectedCategoryId={selectedCategoryId}
+        setSelectedCategoryId={setSelectedCategoryId}
+        selectedPaymentMethodId={selectedPaymentMethodId}
+        setSelectedPaymentMethodId={setSelectedPaymentMethodId}
+        categoryOptions={categoryOptions.map((x) => ({ id: x.id, name: x.categoryName }))}
+        paymentMethodOptions={paymentMethodOptions.map((x) => ({ id: x.id, name: x.name }))}
       />
 
       {/* Analytics Section */}

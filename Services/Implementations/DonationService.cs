@@ -13,32 +13,58 @@ namespace ClubManagement.Services.Implementations
         public DonationService(AppDbContext context) => _context = context;
 
         // ── Paged list with filtering & sorting ───────────────────────────
-    public async Task<PagedResult<DonationResponseDto>> GetPagedDonationsAsync(DonationQueryParams query)
-    {
-        var q = _context.Donations
-            .Include(d => d.Member)
-            .Include(d => d.Category)
-            .Include(d => d.PaymentMethodLookup)
-            .AsNoTracking()
-            .AsQueryable();
-    
-        if (query.MemberId.HasValue)
-            q = q.Where(d => d.MemberId == query.MemberId.Value);
-    
-        if (query.CategoryId.HasValue)
-            q = q.Where(d => d.CategoryId == query.CategoryId.Value);
-    
-        if (query.PaymentMethodId.HasValue)
-            q = q.Where(d => d.PaymentMethodId == query.PaymentMethodId.Value);
-    
-        if (query.FromDate.HasValue)
-            q = q.Where(d => d.DonationDate >= ToUtc(query.FromDate.Value));
-    
-        if (query.ToDate.HasValue)
-            q = q.Where(d => d.DonationDate <= ToUtc(query.ToDate.Value));
-    
-        // sorting unchanged
-    }
+        public async Task<PagedResult<DonationResponseDto>> GetPagedDonationsAsync(DonationQueryParams query)
+        {
+            var q = _context.Donations
+                .Include(d => d.Member)
+                .Include(d => d.Category)
+                .Include(d => d.PaymentMethodLookup)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (query.MemberId.HasValue)
+                q = q.Where(d => d.MemberId == query.MemberId.Value);
+
+            if (query.CategoryId.HasValue)
+                q = q.Where(d => d.CategoryId == query.CategoryId.Value);
+
+            if (query.PaymentMethodId.HasValue)
+                q = q.Where(d => d.PaymentMethodId == query.PaymentMethodId.Value);
+
+            if (query.FromDate.HasValue)
+                q = q.Where(d => d.DonationDate >= ToUtc(query.FromDate.Value));
+
+            if (query.ToDate.HasValue)
+                q = q.Where(d => d.DonationDate <= ToUtc(query.ToDate.Value));
+
+            q = (query.SortBy.ToLower(), query.SortDir.ToLower()) switch
+            {
+                ("amount", "asc")   => q.OrderBy(d => d.Amount),
+                ("amount", _)         => q.OrderByDescending(d => d.Amount),
+                ("createdat", "asc") => q.OrderBy(d => d.CreatedAt),
+                ("createdat", _)      => q.OrderByDescending(d => d.CreatedAt),
+                (_, "asc")            => q.OrderBy(d => d.DonationDate),
+                _                      => q.OrderByDescending(d => d.DonationDate),
+            };
+
+            var totalCount = await q.CountAsync();
+
+            var page = Math.Max(1, query.Page);
+            var pageSize = Math.Clamp(query.PageSize, 1, 100);
+
+            var items = await q
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<DonationResponseDto>
+            {
+                Items = items.Select(MapToDto).ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
 
         // ── Single donation ───────────────────────────────────────────────
         public async Task<DonationResponseDto?> GetDonationByIdAsync(int id)
@@ -95,10 +121,22 @@ namespace ClubManagement.Services.Implementations
             if (!memberExists)
                 throw new KeyNotFoundException($"Member with ID {dto.MemberId} was not found.");
 
+            var categoryExists = await _context.DonationCategories
+                .AnyAsync(c => c.CategoryId == dto.CategoryId && c.IsActive);
+            if (!categoryExists)
+                throw new KeyNotFoundException($"Donation category with ID {dto.CategoryId} was not found.");
+
+            var paymentMethodExists = await _context.PaymentMethodLookups
+                .AnyAsync(p => p.PaymentMethodId == dto.PaymentMethodId && p.IsActive);
+            if (!paymentMethodExists)
+                throw new KeyNotFoundException($"Payment method with ID {dto.PaymentMethodId} was not found.");
+
             var donation = new Donation
             {
                 MemberId        = dto.MemberId,
                 Amount          = dto.Amount,
+                CategoryId      = dto.CategoryId,
+                PaymentMethodId = dto.PaymentMethodId,
                 ReferenceNumber = dto.ReferenceNumber,
                 DonationDate    = ToUtc(dto.DonationDate),
                 Note            = dto.Note,
@@ -109,8 +147,10 @@ namespace ClubManagement.Services.Implementations
             _context.Donations.Add(donation);
             await _context.SaveChangesAsync();
 
-            // Reload with Member navigation included
+            // Reload navigation entities used by response mapping
             await _context.Entry(donation).Reference(d => d.Member).LoadAsync();
+            await _context.Entry(donation).Reference(d => d.Category).LoadAsync();
+            await _context.Entry(donation).Reference(d => d.PaymentMethodLookup).LoadAsync();
 
             return MapToDto(donation);
         }

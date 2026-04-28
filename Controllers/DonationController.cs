@@ -13,7 +13,7 @@ public class DonationController : ControllerBase
     public DonationController(IDonationService donationService) =>
         _donationService = donationService;
 
-    // GET /api/donations?memberId=&donationType=&paymentMethod=&fromDate=&toDate=&sortBy=donationDate&sortDir=desc&page=1&pageSize=10
+    // GET /api/donations?memberId=&categoryId=&paymentMethodId=&fromDate=&toDate=&sortBy=donationDate&sortDir=desc&page=1&pageSize=10
     [HttpGet("api/donations")]
     public async Task<IActionResult> GetDonations([FromQuery] DonationQueryParams query)
     {

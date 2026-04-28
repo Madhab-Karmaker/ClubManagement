@@ -6,8 +6,8 @@ export interface DonationRecord {
   donorPhone: string;
   amount: number;
   date: string;
-  category: 'general' | 'event' | 'cause' | 'project';
-  paymentMethod: 'cash' | 'online' | 'cheque' | 'bank_transfer';
+  category: string;
+  paymentMethod: string;
   status: 'completed' | 'pending' | 'cancelled';
   notes?: string;
 }

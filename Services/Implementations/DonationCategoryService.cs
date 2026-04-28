@@ -3,6 +3,7 @@ using ClubManagement.Domain.Models;
 using ClubManagement.Infrastructure.Data;
 using ClubManagement.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using DonationCategoryResponseDto = ClubManagement.Domain.DTOs.DonationCategoryDto;
 
 namespace ClubManagement.Services.Implementations
 {
@@ -15,11 +16,11 @@ namespace ClubManagement.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<DonationCategoryDto>> GetAllAsync()
+        public async Task<List<DonationCategoryResponseDto>> GetAllAsync()
         {
             return await _context.DonationCategories
                 .OrderBy(x => x.CategoryName)
-                .Select(x => new DonationCategoryDto
+                .Select(x => new DonationCategoryResponseDto
                 {
                     Id = x.CategoryId,
                     CategoryName = x.CategoryName,
@@ -30,7 +31,7 @@ namespace ClubManagement.Services.Implementations
                 .ToListAsync();
         }
 
-        public async Task<DonationCategoryDto> GetByIdAsync(int id)
+        public async Task<DonationCategoryResponseDto> GetByIdAsync(int id)
         {
             var entity = await _context.DonationCategories.FindAsync(id);
             if (entity == null)
@@ -39,7 +40,7 @@ namespace ClubManagement.Services.Implementations
             return ToDto(entity);
         }
 
-        public async Task<DonationCategoryDto> CreateAsync(CreateDonationCategoryDto dto)
+        public async Task<DonationCategoryResponseDto> CreateAsync(CreateDonationCategoryDto dto)
         {
             var entity = new DonationCategory
             {
@@ -55,7 +56,7 @@ namespace ClubManagement.Services.Implementations
             return ToDto(entity);
         }
 
-        public async Task<DonationCategoryDto> UpdateAsync(int id, UpdateDonationCategoryDto dto)
+        public async Task<DonationCategoryResponseDto> UpdateAsync(int id, UpdateDonationCategoryDto dto)
         {
             var entity = await _context.DonationCategories.FindAsync(id);
             if (entity == null)
@@ -80,7 +81,7 @@ namespace ClubManagement.Services.Implementations
             return true;
         }
 
-        private static DonationCategoryDto ToDto(DonationCategory entity) => new()
+        private static DonationCategoryResponseDto ToDto(DonationCategory entity) => new()
         {
             Id = entity.CategoryId,
             CategoryName = entity.CategoryName,

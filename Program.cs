@@ -1,10 +1,8 @@
-﻿using ClubManagement.Domain.Models;
+using ClubManagement.Domain.Models;
 using ClubManagement.Infrastructure.Data;
 using ClubManagement.Services.Interfaces;
 using ClubManagement.Services;
 using ClubManagement.Services.Implementations;
-using ClubManagement.Application.Interfaces;
-using ClubManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -31,8 +29,6 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
-builder.Services.AddScoped<IDonationService, DonationService>();
-builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // ✅ Identity setup

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { type DonationRecord } from '../../types/donation.types.ts';
-import { formatBDT, getDaysAgo } from '../../services/donation.service';
+import { formatBDT, getDaysAgo } from '../../services/donation.service.ts';
 
 interface TopDonorsTableProps {
   donations: DonationRecord[];

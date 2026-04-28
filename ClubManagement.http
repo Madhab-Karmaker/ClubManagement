@@ -1,4 +1,4 @@
-@ClubManagement_HostAddress = http://localhost:5240
+@ClubManagement_HostAddress = http://localhost:5138
 
 GET {{ClubManagement_HostAddress}}/weatherforecast/
 Accept: application/json

@@ -11,6 +11,12 @@ interface DonationFiltersProps {
   setCustomDateStart: (date: string) => void;
   customDateEnd: string;
   setCustomDateEnd: (date: string) => void;
+  selectedCategoryId: number | '';
+  setSelectedCategoryId: (id: number | '') => void;
+  selectedPaymentMethodId: number | '';
+  setSelectedPaymentMethodId: (id: number | '') => void;
+  categoryOptions: Array<{ id: number; name: string }>;
+  paymentMethodOptions: Array<{ id: number; name: string }>;
 }
 
 const DonationFilters: React.FC<DonationFiltersProps> = ({
@@ -24,6 +30,12 @@ const DonationFilters: React.FC<DonationFiltersProps> = ({
   setCustomDateStart,
   customDateEnd,
   setCustomDateEnd,
+  selectedCategoryId,
+  setSelectedCategoryId,
+  selectedPaymentMethodId,
+  setSelectedPaymentMethodId,
+  categoryOptions,
+  paymentMethodOptions,
 }) => {
   return (
     <div className="donation-filters-section">
@@ -102,6 +114,44 @@ const DonationFilters: React.FC<DonationFiltersProps> = ({
           >
             <option value="recent">Most Recent</option>
             <option value="amount">Highest Amount</option>
+          </select>
+        </div>
+
+        <div className="donation-filter-group">
+          <label>Category</label>
+          <select
+            value={selectedCategoryId}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedCategoryId(value === '' ? '' : Number(value));
+            }}
+            className="form-input donation-select"
+          >
+            <option value="">All Categories</option>
+            {categoryOptions.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="donation-filter-group">
+          <label>Payment Method</label>
+          <select
+            value={selectedPaymentMethodId}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedPaymentMethodId(value === '' ? '' : Number(value));
+            }}
+            className="form-input donation-select"
+          >
+            <option value="">All Methods</option>
+            {paymentMethodOptions.map((method) => (
+              <option key={method.id} value={method.id}>
+                {method.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>

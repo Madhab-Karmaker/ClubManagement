@@ -1,6 +1,6 @@
 import React from 'react';
 import { type DonorProfile } from '../../types/donation.types.ts';
-import { formatBDT, formatDate } from '../../services/donation.service';
+import { formatBDT, formatDate } from '../../services/donation.service.ts';
 
 interface TopDonorLeaderboardProps {
   donors: DonorProfile[];

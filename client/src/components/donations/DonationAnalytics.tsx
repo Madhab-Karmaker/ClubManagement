@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { type DonationRecord, type DonationData } from '../../types/donation.types.ts';
-import { formatBDT } from '../../services/donation.service';
+import { formatBDT } from '../../services/donation.service.ts';
 
 interface DonationAnalyticsProps {
   data: DonationData;

@@ -1,4 +1,3 @@
-using ClubManagement.Domain.Constants;
 using System.ComponentModel.DataAnnotations;
 
 namespace ClubManagement.Domain.DTOs
@@ -10,11 +9,11 @@ namespace ClubManagement.Domain.DTOs
         /// <summary>Filter by member ID.</summary>
         public int? MemberId { get; set; }
 
-        /// <summary>Filter by donation type.</summary>
-        public int? CategoryId { get; set; } 
+        /// <summary>Filter by donation category ID.</summary>
+        public int? CategoryId { get; set; }
 
-        /// <summary>Filter by payment method.</summary>
-        public PaymentMethodType? PaymentMethod { get; set; }
+        /// <summary>Filter by payment method ID.</summary>
+        public int? PaymentMethodId { get; set; }
 
         /// <summary>From date (inclusive).</summary>
         public DateTime? FromDate { get; set; }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatBDT } from '../../services/donation.service';
+import { formatBDT } from '../../services/donation.service.ts';
 
 interface SummaryCardProps {
   icon: string;
