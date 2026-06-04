@@ -1,4 +1,49 @@
+import apiClient from '../api/apiClient';
 import { type DonationData, type DonationRecord, type DonorProfile } from '../types/donation.types.ts';
+
+export interface CreateDonationDto {
+  memberId: number;
+  amount: number;
+  categoryId: number;
+  paymentMethodId: number;
+  referenceNumber?: string;
+  donationDate: string;
+  note?: string;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface DonationResponseDto {
+  id: number;
+  memberId: number;
+  memberFullName: string;
+  amount: number;
+  categoryName: string;
+  paymentMethod: string;
+  referenceNumber?: string;
+  donationDate: string;
+  note?: string;
+  createdAt: string;
+}
+
+const donationService = {
+  create: (data: CreateDonationDto) =>
+    apiClient.post<DonationResponseDto>('/api/donations', data),
+
+  getAll: (params?: any) =>
+    apiClient.get<PagedResult<DonationResponseDto>>('/api/donations', { params }),
+
+  getById: (id: number) =>
+    apiClient.get<DonationResponseDto>(`/api/donations/${id}`),
+};
+
+export default donationService;
 
 /**
  * Generate dummy donation data for the dashboard

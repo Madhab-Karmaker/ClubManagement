@@ -33,6 +33,11 @@ namespace ClubManagement.Infrastructure.Services
 
         public async Task<PaymentMethodDto> CreatePaymentMethodAsync(CreatePaymentMethodDto paymentMethod)
         {
+            if (await _context.PaymentMethodLookups.AnyAsync(p => p.MethodName.ToLower() == paymentMethod.Name.ToLower()))
+            {
+                throw new InvalidOperationException($"A payment method named '{paymentMethod.Name}' already exists.");
+            }
+
             var entity = new PaymentMethodLookup
             {
                 MethodName = paymentMethod.Name,

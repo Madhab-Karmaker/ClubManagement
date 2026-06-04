@@ -63,11 +63,12 @@ namespace ClubManagement.Infrastructure.Data
                 entity.Property(e => e.Description).HasMaxLength(500);
                 entity.HasIndex(e => e.CategoryName).IsUnique();
 
+                var seedCategoryCreatedAt = new DateTime(2026, 4, 21, 18, 4, 6, DateTimeKind.Utc);
                 entity.HasData(
-                    new DonationCategory { CategoryId = 1, CategoryName = "General", Description = "General donations for club operations", CreatedAt = DateTime.UtcNow, IsActive = true },
-                    new DonationCategory { CategoryId = 2, CategoryName = "Event", Description = "Donations for specific events", CreatedAt = DateTime.UtcNow, IsActive = true },
-                    new DonationCategory { CategoryId = 3, CategoryName = "Cause", Description = "Donations for special causes", CreatedAt = DateTime.UtcNow, IsActive = true },
-                    new DonationCategory { CategoryId = 4, CategoryName = "Project", Description = "Donations for specific projects", CreatedAt = DateTime.UtcNow, IsActive = true }
+                    new DonationCategory { CategoryId = 1, CategoryName = "General", Description = "General donations for club operations", CreatedAt = seedCategoryCreatedAt, IsActive = true },
+                    new DonationCategory { CategoryId = 2, CategoryName = "Event", Description = "Donations for specific events", CreatedAt = seedCategoryCreatedAt, IsActive = true },
+                    new DonationCategory { CategoryId = 3, CategoryName = "Cause", Description = "Donations for special causes", CreatedAt = seedCategoryCreatedAt, IsActive = true },
+                    new DonationCategory { CategoryId = 4, CategoryName = "Project", Description = "Donations for specific projects", CreatedAt = seedCategoryCreatedAt, IsActive = true }
                 );
             });
 
@@ -82,11 +83,12 @@ namespace ClubManagement.Infrastructure.Data
                 entity.Property(e => e.Description).HasMaxLength(200);
                 entity.HasIndex(e => e.MethodName).IsUnique();
 
+                var seedPaymentMethodCreatedAt = new DateTime(2026, 4, 21, 18, 4, 6, DateTimeKind.Utc);
                 entity.HasData(
-                    new PaymentMethodLookup { PaymentMethodId = 1, MethodName = "Cash", Description = "Cash payment", CreatedAt = DateTime.UtcNow, IsActive = true },
-                    new PaymentMethodLookup { PaymentMethodId = 2, MethodName = "Online", Description = "Online payment via bank or payment gateway", CreatedAt = DateTime.UtcNow, IsActive = true },
-                    new PaymentMethodLookup { PaymentMethodId = 3, MethodName = "Cheque", Description = "Payment via cheque", CreatedAt = DateTime.UtcNow, IsActive = true },
-                    new PaymentMethodLookup { PaymentMethodId = 4, MethodName = "Bank Transfer", Description = "Direct bank transfer", CreatedAt = DateTime.UtcNow, IsActive = true }
+                    new PaymentMethodLookup { PaymentMethodId = 1, MethodName = "Cash", Description = "Cash payment", CreatedAt = seedPaymentMethodCreatedAt, IsActive = true },
+                    new PaymentMethodLookup { PaymentMethodId = 2, MethodName = "Online", Description = "Online payment via bank or payment gateway", CreatedAt = seedPaymentMethodCreatedAt, IsActive = true },
+                    new PaymentMethodLookup { PaymentMethodId = 3, MethodName = "Cheque", Description = "Payment via cheque", CreatedAt = seedPaymentMethodCreatedAt, IsActive = true },
+                    new PaymentMethodLookup { PaymentMethodId = 4, MethodName = "Bank Transfer", Description = "Direct bank transfer", CreatedAt = seedPaymentMethodCreatedAt, IsActive = true }
                 );
             });
 
@@ -100,10 +102,11 @@ namespace ClubManagement.Infrastructure.Data
                 entity.Property(e => e.Description).HasMaxLength(200);
                 entity.HasIndex(e => e.StatusName).IsUnique();
 
+                var seedStatusCreatedAt = new DateTime(2026, 4, 21, 18, 4, 6, DateTimeKind.Utc);
                 entity.HasData(
-                    new DonationStatus { StatusId = 1, StatusName = "Completed", Description = "Donation has been completed and verified", CreatedAt = DateTime.UtcNow },
-                    new DonationStatus { StatusId = 2, StatusName = "Pending", Description = "Donation is pending verification", CreatedAt = DateTime.UtcNow },
-                    new DonationStatus { StatusId = 3, StatusName = "Cancelled", Description = "Donation has been cancelled", CreatedAt = DateTime.UtcNow }
+                    new DonationStatus { StatusId = 1, StatusName = "Completed", Description = "Donation has been completed and verified", CreatedAt = seedStatusCreatedAt },
+                    new DonationStatus { StatusId = 2, StatusName = "Pending", Description = "Donation is pending verification", CreatedAt = seedStatusCreatedAt },
+                    new DonationStatus { StatusId = 3, StatusName = "Cancelled", Description = "Donation has been cancelled", CreatedAt = seedStatusCreatedAt }
                 );
             });
 

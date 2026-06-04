@@ -4,10 +4,11 @@ import { useAuth } from "../context/AuthContext";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
-import MembersPage from "../pages/members/MembersPage";
+import MembersPagePremium from "../pages/members/MembersPagePremium.tsx";
 import RolesPage from "../pages/roles/RolesPage";
 import PaymentMethodsPage from "../pages/paymentmethods/PaymentMethodsPage";
 import DonationDashboard from "../pages/donations/DonationDashboard.tsx";
+import DonationCategoriesPage from "../pages/donations/DonationCategoriesPage.tsx";
 import ProtectedLayout from "../components/layout/ProtectedLayout";
 
 /** Redirects unauthenticated users to /login */
@@ -33,10 +34,11 @@ const AppRouter = () => (
     {/* Protected routes — wrapped in the shared sidebar layout */}
     <Route element={<RequireAuth><ProtectedLayout /></RequireAuth>}>
       <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/members" element={<MembersPage />} />
+      <Route path="/members" element={<MembersPagePremium />} />
       <Route path="/roles" element={<RolesPage />} />
       <Route path="/payment-methods" element={<PaymentMethodsPage />} />
       <Route path="/donations" element={<DonationDashboard />} />
+      <Route path="/donation-categories" element={<DonationCategoriesPage />} />
       <Route path="/profile" element={<PlaceholderPage icon="👤" title="Profile" description="View and edit your profile" />} />
     </Route>
 

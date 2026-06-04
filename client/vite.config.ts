@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Forward every /api/* request to the ASP.NET Core backend
       '/api': {
-        target: 'https://localhost:7290',
+        target: 'https://localhost:7065',
         changeOrigin: true,
         secure: false,   // accept the dev self-signed certificate
       },

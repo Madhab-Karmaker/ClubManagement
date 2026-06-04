@@ -19,6 +19,14 @@ const LineChart: React.FC<{ data: Array<{ date: string; amount: number }> }> = (
   const chartWidth = width - padding * 2;
   const chartHeight = height - padding * 2;
 
+  if (data.length === 0) {
+    return (
+      <div className="donation-chart-empty">
+        No donation trend data available for the selected period.
+      </div>
+    );
+  }
+
   const maxAmount = Math.max(...data.map((d) => d.amount), 1);
   const minAmount = 0;
 
@@ -185,19 +193,34 @@ const PieChart: React.FC<{ data: Array<{ name: string; percentage: number; amoun
   );
 };
 
-const DonationAnalytics: React.FC<DonationAnalyticsProps> = ({ data, filteredDonations }) => {
-  // Get last 10 days of data for line chart
+const DonationAnalytics: React.FC<DonationAnalyticsProps> = ({ filteredDonations }) => {
+  // Get last 10 days of filtered data for line chart
   const last10Days = useMemo(() => {
-    return data.dailyDonations.slice(-10);
-  }, [data.dailyDonations]);
+    const dailyMap = new Map<string, number>();
+
+    filteredDonations.forEach((donation) => {
+      dailyMap.set(donation.date, (dailyMap.get(donation.date) || 0) + donation.amount);
+    });
+
+    return Array.from(dailyMap.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .slice(-10)
+      .map(([date, amount]) => ({ date, amount }));
+  }, [filteredDonations]);
 
   // Get top 5 categories for bar chart
   const topCategories = useMemo(() => {
-    return data.categories.slice(0, 5).map((c) => ({
-      label: c.name,
-      value: c.amount,
-    }));
-  }, [data.categories]);
+    const categoryMap = new Map<string, number>();
+
+    filteredDonations.forEach((donation) => {
+      categoryMap.set(donation.category, (categoryMap.get(donation.category) || 0) + donation.amount);
+    });
+
+    return Array.from(categoryMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([label, value]) => ({ label, value }));
+  }, [filteredDonations]);
 
   // Get top 5 donors for bar chart
   const topDonorsBar = useMemo(() => {
@@ -226,6 +249,25 @@ const DonationAnalytics: React.FC<DonationAnalyticsProps> = ({ data, filteredDon
       }));
   }, [filteredDonations]);
 
+  const categoryDistribution = useMemo(() => {
+    const categoryMap = new Map<string, number>();
+
+    filteredDonations.forEach((donation) => {
+      categoryMap.set(donation.category, (categoryMap.get(donation.category) || 0) + donation.amount);
+    });
+
+    const categories = Array.from(categoryMap.entries())
+      .map(([name, amount]) => ({ name, amount, percentage: 0 }))
+      .sort((a, b) => b.amount - a.amount);
+
+    const total = categories.reduce((sum, category) => sum + category.amount, 0);
+    categories.forEach((category) => {
+      category.percentage = total > 0 ? Math.round((category.amount / total) * 100) : 0;
+    });
+
+    return categories;
+  }, [filteredDonations]);
+
   return (
     <div className="donation-analytics-section">
       <h2 className="donation-section-title">📊 Donation Analytics</h2>
@@ -250,7 +292,11 @@ const DonationAnalytics: React.FC<DonationAnalyticsProps> = ({ data, filteredDon
         {/* Pie Chart - Categories */}
         <div className="donation-chart-card donation-chart-card--pie">
           <h3 className="donation-chart-title">Donation Categories Distribution</h3>
-          <PieChart data={data.categories} />
+          {categoryDistribution.length > 0 ? (
+            <PieChart data={categoryDistribution} />
+          ) : (
+            <p className="donation-chart-empty">No donation data available</p>
+          )}
         </div>
 
         {/* Bar Chart - Categories */}

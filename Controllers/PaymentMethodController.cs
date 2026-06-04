@@ -78,9 +78,14 @@ namespace ClubManagement.Controllers
                 var createdPaymentMethod = await _paymentMethodService.CreatePaymentMethodAsync(paymentMethod);
                 return CreatedAtAction(nameof(GetPaymentMethodById), new { id = createdPaymentMethod.Id }, createdPaymentMethod);
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error creating payment method: {ex.Message}" });
+                var errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, new { message = $"Error creating payment method: {ex.Message}. Details: {errorMsg}" });
             }
         }
 
