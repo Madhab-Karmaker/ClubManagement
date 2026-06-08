@@ -14,16 +14,14 @@ import {
   DownloadIcon,
   EditIcon,
   EyeIcon,
-  FilterIcon,
   PlusIcon,
-  QrCodeIcon,
   SearchIcon,
   SparklesIcon,
   TrendUpIcon,
-  UploadIcon,
   UserIcon,
   UsersIcon,
   TrashIcon,
+  XIcon,
 } from "../../components/ui/DashboardIcons";
 
 const PAGE_SIZE = 10;
@@ -150,9 +148,6 @@ const buildAttendance = (member: MemberResponse): AttendanceRow[] => {
   ];
 };
 
-const buildQrPattern = (seed: number) =>
-  Array.from({ length: 36 }, (_, index) => ((index + seed * 3) % 7 === 0) || ((index + seed) % 5 === 0));
-
 const FeedbackBanner: React.FC<{ message: string; type: "success" | "error"; onDismiss: () => void }> = ({ message, type, onDismiss }) => (
   <div className={`mm-banner mm-banner--${type}`} role="alert">
     <span className="mm-banner__message">{message}</span>
@@ -209,6 +204,8 @@ const MembersPagePremium: React.FC = () => {
   const [formMemberId, setFormMemberId] = useState<number | null>(null);
   const [form, setForm] = useState<MemberFormData>(emptyForm());
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof MemberFormData, string>>>({});
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedMember = useMemo(
@@ -229,7 +226,6 @@ const MembersPagePremium: React.FC = () => {
 
   const paymentHistory = useMemo(() => (selectedMember ? buildPaymentHistory(selectedMember) : []), [selectedMember]);
   const attendanceRows = useMemo(() => (selectedMember ? buildAttendance(selectedMember) : []), [selectedMember]);
-  const qrPattern = useMemo(() => buildQrPattern(selectedMember?.memberId ?? 1), [selectedMember]);
 
   useEffect(() => {
     if (searchTimer.current) clearTimeout(searchTimer.current);
@@ -255,17 +251,6 @@ const MembersPagePremium: React.FC = () => {
       })
       .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    if (members.length === 0) {
-      setSelectedMemberId(null);
-      return;
-    }
-    setSelectedMemberId((current) => {
-      const currentMember = current ? members.find((member) => member.memberId === current) : undefined;
-      return currentMember?.memberId ?? members[0].memberId;
-    });
-  }, [members]);
 
   const loadMembers = useCallback(async () => {
     setLoading(true);
@@ -298,6 +283,7 @@ const MembersPagePremium: React.FC = () => {
     setForm(emptyForm());
     setFormErrors({});
     setFeedback(null);
+    setShowFormModal(true);
   };
 
   const beginEdit = (member: MemberResponse) => {
@@ -308,11 +294,13 @@ const MembersPagePremium: React.FC = () => {
     setSelectedMemberId(member.memberId);
     setSelectedTab("payments");
     setFeedback(null);
+    setShowFormModal(true);
   };
 
   const beginView = (member: MemberResponse) => {
     setSelectedMemberId(member.memberId);
     setSelectedTab("payments");
+    setShowViewModal(true);
   };
 
   const setField =
@@ -385,6 +373,7 @@ const MembersPagePremium: React.FC = () => {
       setFormMode("add");
       setFormMemberId(null);
       setFormErrors({});
+      setShowFormModal(false);
       await loadMembers();
     } catch (err: unknown) {
       setFeedback({ message: extractApiError(err, "Failed to save member."), type: "error" });
@@ -441,6 +430,13 @@ const MembersPagePremium: React.FC = () => {
   const panelTitle = formMode === "add" ? "Add Member" : "Edit Member";
   const panelSubtitle = formMode === "add" ? "Create a polished new member record." : "Update member details and access roles.";
 
+  const closeModals = () => {
+    setShowFormModal(false);
+    setShowViewModal(false);
+    setForm(emptyForm());
+    setFormErrors({});
+  };
+
   return (
     <div className="members-page">
       {feedback && <FeedbackBanner message={feedback.message} type={feedback.type} onDismiss={() => setFeedback(null)} />}
@@ -466,7 +462,7 @@ const MembersPagePremium: React.FC = () => {
               <DownloadIcon className="mm-btn__icon" />
               Export PDF
             </button>
-            <button className="mm-btn" onClick={beginAdd}>
+            <button className="mm-btn mm-btn--primary" onClick={beginAdd}>
               <PlusIcon className="mm-btn__icon" />
               Add Member
             </button>
@@ -474,163 +470,147 @@ const MembersPagePremium: React.FC = () => {
         </div>
       </section>
 
-      <div className="members-shell">
-        <div className="members-main">
-          <section className="members-section">
-            <div className="members-section__body">
-              <div className="members-kpis">
-                {KPI_DEFS.map((card) => {
-                  const Icon = card.icon;
-                  const value = card.label === "Total Members" ? summary.total : card.label === "Active Members" ? summary.active : card.label === "Expired Members" ? summary.expired : summary.newMembers;
-                  return (
-                    <article key={card.label} className={`kpi-card ${card.tone}`}>
-                      <div className="kpi-card__top">
-                        <div className="kpi-card__icon"><Icon /></div>
-                        <span className="mm-chip mm-chip--neutral">+8.4%</span>
-                      </div>
-                      <div className="kpi-card__label">{card.label}</div>
-                      <span className="kpi-card__value">{value}</span>
-                      <div className="kpi-card__trend">
-                        <TrendUpIcon className="mm-mini-icon" />
-                        Strong monthly movement
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
+      <section className="members-section">
+        <div className="members-section__body">
+          <div className="members-kpis">
+            {KPI_DEFS.map((card) => {
+              const Icon = card.icon;
+              const value = card.label === "Total Members" ? summary.total : card.label === "Active Members" ? summary.active : card.label === "Expired Members" ? summary.expired : summary.newMembers;
+              return (
+                <article key={card.label} className={`kpi-card ${card.tone}`}>
+                  <div className="kpi-card__top">
+                    <div className="kpi-card__icon"><Icon /></div>
+                    <span className="mm-chip mm-chip--neutral">+8.4%</span>
+                  </div>
+                  <div className="kpi-card__label">{card.label}</div>
+                  <span className="kpi-card__value">{value}</span>
+                  <div className="kpi-card__trend">
+                    <TrendUpIcon className="mm-mini-icon" />
+                    vs previous month
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-          <section className="members-section mm-table-card">
-            <div className="members-section__header">
-              <div>
-                <h2>Member Registry</h2>
-                <p>{totalCount} members match the current search and filter scope.</p>
-              </div>
-              <div className="members-toolbar__actions">
-                <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={exportCsv}><DownloadIcon className="mm-btn__icon" />Excel</button>
-                <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={exportPdf}><DownloadIcon className="mm-btn__icon" />PDF</button>
-              </div>
-            </div>
-
-            <div className="members-section__body members-toolbar">
-              <div className="members-toolbar__row">
-                <div className="members-toolbar__meta">
-                  <span>Modern roster controls</span>
-                  <span>Quick search, role segmentation, and status filtering with a clean admin flow.</span>
-                </div>
-                <button className="mm-btn" onClick={beginAdd}>
-                  <PlusIcon className="mm-btn__icon" />
-                  Add Member
-                </button>
-              </div>
-
-              <div className="members-filters">
-                <div className="mm-search-wrap">
-                  <SearchIcon className="mm-inline-icon" />
-                  <input className="mm-field mm-field--search" placeholder="Search by name, email, or phone" value={search} onChange={(event) => setSearch(event.target.value)} />
-                </div>
-                <select className="mm-field mm-select" value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
-                  <option value="">All roles</option>
-                  {availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}
-                </select>
-                <select className="mm-field mm-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "" | "true" | "false") }>
-                  <option value="">All status</option>
-                  <option value="true">Active</option>
-                  <option value="false">Inactive</option>
-                </select>
-                <button className="mm-btn mm-btn--ghost" type="button">
-                  <FilterIcon className="mm-btn__icon" />
-                  More Filters
-                </button>
-              </div>
-            </div>
-
-            <div className="mm-table-wrap">
-              {loading ? (
-                <div className="mm-empty">
-                  <div className="mm-empty__icon"><UsersIcon /></div>
-                  <p>Loading members...</p>
-                </div>
-              ) : members.length === 0 ? (
-                <div className="mm-empty">
-                  <div className="mm-empty__icon"><UsersIcon /></div>
-                  <p>No members found matching your filters.</p>
-                </div>
-              ) : (
-                <table className="mm-table">
-                  <thead>
-                    <tr>
-                      <th>Member</th>
-                      <th>Tier</th>
-                      <th>Contact</th>
-                      <th>Join / Expiry</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {members.map((member) => {
-                      const selected = selectedMember?.memberId === member.memberId;
-                      return (
-                        <tr key={member.memberId} className={selected ? "is-selected" : ""} onClick={() => beginView(member)}>
-                          <td>
-                            <div className="mm-table__member">
-                              <MemberAvatar member={member} size={44} />
-                              <div>
-                                <div className="mm-member__name">{member.fullName}</div>
-                                <div className="mm-member__subtle">@{member.username ?? "club.member"}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td><TierChip tier={getMembershipTier(member)} /></td>
-                          <td>
-                            <div className="mm-member__name">{member.email}</div>
-                            <div className="mm-member__subtle">{member.phoneNumber}</div>
-                          </td>
-                          <td>
-                            <div className="mm-member__name">{formatCompactDate(member.joinDate)}</div>
-                            <div className="mm-member__subtle">Expires {formatCompactDate(member.expiryDate)}</div>
-                          </td>
-                          <td><StatusChip member={member} /></td>
-                          <td>
-                            <div className="mm-row-actions" onClick={(event) => event.stopPropagation()}>
-                              <button className="mm-btn mm-btn--ghost mm-btn--icon" type="button" onClick={() => beginView(member)} aria-label="View member"><EyeIcon className="mm-btn__icon" /></button>
-                              <button className="mm-btn mm-btn--secondary mm-btn--icon" type="button" onClick={() => beginEdit(member)} aria-label="Edit member"><EditIcon className="mm-btn__icon" /></button>
-                              <button className="mm-btn mm-btn--danger mm-btn--icon" type="button" disabled={deletingId === member.memberId} onClick={() => handleDelete(member)} aria-label="Delete member"><TrashIcon className="mm-btn__icon" /></button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            {totalPages > 1 && (
-              <div className="mm-pagination">
-                <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1}>Previous</button>
-                <span className="mm-pagination__meta">Page {page} of {totalPages} · {totalCount} members</span>
-                <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages}>Next</button>
-              </div>
-            )}
-          </section>
+      <section className="members-section mm-table-card">
+        <div className="members-section__header">
+          <div>
+            <h2>Member Registry</h2>
+            <p>{totalCount} members match the current search and filter scope.</p>
+          </div>
+          <div className="members-toolbar__actions">
+            <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={exportCsv}><DownloadIcon className="mm-btn__icon" />Excel</button>
+            <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={exportPdf}><DownloadIcon className="mm-btn__icon" />PDF</button>
+          </div>
         </div>
 
-        <aside className="members-side">
-          <section className="members-section mm-form-card">
-            <div className="members-section__header mm-form-card__head">
-              <div className="mm-form-card__title">
-                <span>{panelTitle}</span>
-                <span>{panelSubtitle}</span>
+        <div className="members-section__body members-toolbar">
+          <div className="members-filters">
+            <div className="mm-search-wrap">
+              <SearchIcon className="mm-inline-icon" />
+              <input className="mm-field mm-field--search" placeholder="Search by name, email, or phone" value={search} onChange={(event) => setSearch(event.target.value)} />
+            </div>
+            <select className="mm-field mm-select" value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
+              <option value="">All roles</option>
+              {availableRoles.map((role) => <option key={role} value={role}>{role}</option>)}
+            </select>
+            <select className="mm-field mm-select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "" | "true" | "false") }>
+              <option value="">All status</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+            <button className="mm-btn mm-btn--primary mm-btn--tight" onClick={beginAdd}>
+              <PlusIcon className="mm-btn__icon" />
+              Add Member
+            </button>
+          </div>
+        </div>
+
+        <div className="mm-table-wrap">
+          {loading ? (
+            <div className="mm-empty">
+              <div className="mm-empty__icon"><UsersIcon /></div>
+              <p>Loading members...</p>
+            </div>
+          ) : members.length === 0 ? (
+            <div className="mm-empty">
+              <div className="mm-empty__icon"><UsersIcon /></div>
+              <p>No members found matching your filters.</p>
+            </div>
+          ) : (
+            <table className="mm-table">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Tier</th>
+                  <th>Contact</th>
+                  <th>Join / Expiry</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <tr key={member.memberId} onClick={() => beginView(member)}>
+                    <td>
+                      <div className="mm-table__member">
+                        <MemberAvatar member={member} size={44} />
+                        <div>
+                          <div className="mm-member__name">{member.fullName}</div>
+                          <div className="mm-member__subtle">@{member.username ?? "club.member"}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><TierChip tier={getMembershipTier(member)} /></td>
+                    <td>
+                      <div className="mm-member__name">{member.email}</div>
+                      <div className="mm-member__subtle">{member.phoneNumber}</div>
+                    </td>
+                    <td>
+                      <div className="mm-member__name">{formatCompactDate(member.joinDate)}</div>
+                      <div className="mm-member__subtle">Expires {formatCompactDate(member.expiryDate)}</div>
+                    </td>
+                    <td><StatusChip member={member} /></td>
+                    <td>
+                      <div className="mm-row-actions" onClick={(event) => event.stopPropagation()}>
+                        <button className="mm-btn mm-btn--ghost mm-btn--icon" type="button" onClick={() => beginView(member)} aria-label="View member"><EyeIcon className="mm-btn__icon" /></button>
+                        <button className="mm-btn mm-btn--secondary mm-btn--icon" type="button" onClick={() => beginEdit(member)} aria-label="Edit member"><EditIcon className="mm-btn__icon" /></button>
+                        <button className="mm-btn mm-btn--danger mm-btn--icon" type="button" disabled={deletingId === member.memberId} onClick={() => handleDelete(member)} aria-label="Delete member"><TrashIcon className="mm-btn__icon" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="mm-pagination">
+            <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1}>Previous</button>
+            <span className="mm-pagination__meta">Page {page} of {totalPages} · {totalCount} members</span>
+            <button className="mm-btn mm-btn--secondary mm-btn--tight" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages}>Next</button>
+          </div>
+        )}
+      </section>
+
+      {showFormModal && (
+        <div className="mm-overlay" onClick={closeModals}>
+          <div className="mm-modal mm-modal--form" onClick={(e) => e.stopPropagation()}>
+            <div className="mm-modal__header">
+              <div className="mm-modal__title-group">
+                <h2 className="mm-modal__title">{panelTitle}</h2>
+                <p className="mm-modal__subtitle">{panelSubtitle}</p>
               </div>
-              <button className="mm-btn mm-btn--ghost mm-btn--icon" type="button" onClick={beginAdd} aria-label="Reset form">
-                <UploadIcon className="mm-btn__icon" />
+              <button className="mm-modal__close" onClick={closeModals} aria-label="Close modal">
+                <XIcon className="mm-btn__icon" />
               </button>
             </div>
-            <div className="members-section__body">
-              <form className="mm-form" onSubmit={(event) => { event.preventDefault(); void handleSave(); }}>
+            <div className="mm-modal__body">
+              <form onSubmit={(event) => { event.preventDefault(); void handleSave(); }}>
                 <div className="mm-upload">
                   <div className="mm-upload__avatar">
                     {form.profilePhotoUrl ? <img src={form.profilePhotoUrl} alt="Member avatar preview" /> : <UserIcon className="mm-inline-icon" />}
@@ -712,115 +692,98 @@ const MembersPagePremium: React.FC = () => {
                 </div>
 
                 <div className="mm-form__footer">
-                  <button className="mm-btn mm-btn--secondary" type="button" onClick={beginAdd}>Cancel</button>
-                  <button className="mm-btn" type="submit" disabled={saving}>{saving ? "Saving..." : formMode === "add" ? "Add Member" : "Save Changes"}</button>
+                  <button className="mm-btn mm-btn--secondary" type="button" onClick={closeModals}>Cancel</button>
+                  <button className="mm-btn mm-btn--primary" type="submit" disabled={saving}>{saving ? "Saving..." : formMode === "add" ? "Add Member" : "Save Changes"}</button>
                 </div>
               </form>
             </div>
-          </section>
+          </div>
+        </div>
+      )}
 
-          <section className="members-section">
-            <div className="members-section__header">
-              <div>
-                <h3>Member Profile</h3>
-                <p>Selected member summary, QR pass, payments, and attendance.</p>
+      {showViewModal && selectedMember && (
+        <div className="mm-overlay" onClick={closeModals}>
+          <div className="mm-modal mm-modal--view" onClick={(e) => e.stopPropagation()}>
+            <div className="mm-modal__header">
+              <div className="mm-modal__title-group">
+                <h2 className="mm-modal__title">Member Profile</h2>
+                <p className="mm-modal__subtitle">Selected member summary, QR pass, payments, and attendance.</p>
               </div>
-              {selectedMember && (
-                <button className="mm-btn mm-btn--ghost mm-btn--tight" type="button" onClick={() => beginEdit(selectedMember)}>
+              <div className="mm-modal__header-actions">
+                <button className="mm-btn mm-btn--secondary mm-btn--tight" type="button" onClick={() => { setShowViewModal(false); beginEdit(selectedMember); }}>
                   <EditIcon className="mm-btn__icon" />
                   Edit
                 </button>
-              )}
+                <button className="mm-modal__close" onClick={closeModals} aria-label="Close modal">
+                  <XIcon className="mm-btn__icon" />
+                </button>
+              </div>
             </div>
-            <div className="members-section__body mm-profile-card__body">
-              {selectedMember ? (
-                <>
-                  <div className="mm-profile-hero">
-                    <MemberAvatar member={selectedMember} size={64} />
-                    <div className="mm-profile-hero__content">
-                      <h4 className="mm-profile-hero__name">{selectedMember.fullName}</h4>
-                      <div className="mm-profile-hero__meta">
-                        <span>@{selectedMember.username ?? "club.member"}</span>
-                        <span>#{selectedMember.memberId}</span>
-                      </div>
-                      <div className="mm-chip-row">
-                        <span className={`mm-chip ${getMembershipTier(selectedMember) === "VIP" ? "mm-chip--vip" : getMembershipTier(selectedMember) === "Premium" ? "mm-chip--premium" : "mm-chip--primary"}`}>{getMembershipTier(selectedMember)} Membership</span>
-                        <span className={`mm-chip ${selectedMember.isActive ? "mm-chip--success" : "mm-chip--danger"}`}>{selectedMember.isActive ? "Active" : "Expired"}</span>
-                      </div>
-                    </div>
+            <div className="mm-modal__body">
+              <div className="mm-profile-hero">
+                <MemberAvatar member={selectedMember} size={64} />
+                <div className="mm-profile-hero__content">
+                  <h3 className="mm-profile-hero__name">{selectedMember.fullName}</h3>
+                  <div className="mm-profile-hero__meta">
+                    <span>@{selectedMember.username ?? "club.member"}</span>
+                    <span>#{selectedMember.memberId}</span>
                   </div>
-
-                  <div className="mm-profile-card__grid">
-                    <div className="mm-profile-stat"><span>Join Date</span><span>{formatShortDate(selectedMember.joinDate)}</span></div>
-                    <div className="mm-profile-stat"><span>Expiry Date</span><span>{formatShortDate(selectedMember.expiryDate)}</span></div>
-                    <div className="mm-profile-stat"><span>Days Remaining</span><span>{getDaysRemaining(selectedMember)} days</span></div>
-                    <div className="mm-profile-stat"><span>Roles</span><span>{selectedMember.roles.length} assigned</span></div>
+                  <div className="mm-chip-row">
+                    <TierChip tier={getMembershipTier(selectedMember)} />
+                    <span className={`mm-chip ${selectedMember.isActive ? "mm-chip--success" : "mm-chip--danger"}`}>{selectedMember.isActive ? "Active" : "Expired"}</span>
                   </div>
-
-                  <div className="mm-qr-card">
-                    <div className="mm-qr-card__meta">
-                      <span>Digital pass</span>
-                      <strong>{selectedMember.fullName}</strong>
-                      <span>Scan to validate membership at reception or event entry.</span>
-                    </div>
-                    <div className="mm-qr" aria-label="QR preview">
-                      {qrPattern.map((filled, index) => <span key={index} className={`mm-qr__cell${filled ? " mm-qr__cell--active" : ""}`} />)}
-                    </div>
-                  </div>
-
-                  <div className="mm-profile-actions">
-                    <button className="mm-btn mm-btn--secondary" type="button"><QrCodeIcon className="mm-btn__icon" />Download Card</button>
-                    <button className="mm-btn mm-btn--ghost" type="button" onClick={() => beginView(selectedMember)}><EyeIcon className="mm-btn__icon" />Focus Member</button>
-                  </div>
-
-                  <div className="mm-profile-tabs">
-                    <button type="button" className={`mm-profile-tabs__btn${selectedTab === "payments" ? " is-active" : ""}`} onClick={() => setSelectedTab("payments")}>Payment History</button>
-                    <button type="button" className={`mm-profile-tabs__btn${selectedTab === "attendance" ? " is-active" : ""}`} onClick={() => setSelectedTab("attendance")}>Attendance</button>
-                  </div>
-
-                  {selectedTab === "payments" ? (
-                    <table className="mm-profile-table">
-                      <thead>
-                        <tr>
-                          <th>Invoice</th>
-                          <th>Date</th>
-                          <th>Amount</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {paymentHistory.map((entry) => (
-                          <tr key={entry.invoice}>
-                            <td>{entry.invoice}</td>
-                            <td>{formatCompactDate(entry.date)}</td>
-                            <td>{entry.amount}</td>
-                            <td><span className={`mm-chip ${entry.status === "Paid" ? "mm-chip--success" : entry.status === "Pending" ? "mm-chip--warning" : "mm-chip--danger"}`}>{entry.status}</span></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="mm-profile-list">
-                      {attendanceRows.map((entry) => (
-                        <div key={entry.label} className="mm-attendance-card">
-                          <strong>{entry.label}</strong>
-                          <span>{entry.sessions} sessions · {entry.hours} · {entry.trend}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="mm-profile-empty">
-                  <div className="mm-profile-empty__icon"><UserIcon /></div>
-                  <strong>No member selected</strong>
-                  <span>Choose a row from the table to preview the profile, attendance, and payment history.</span>
                 </div>
-              )}
+              </div>
+
+              <div className="mm-profile-card__grid">
+                <div className="mm-profile-stat"><span>Join Date</span><span>{formatShortDate(selectedMember.joinDate)}</span></div>
+                <div className="mm-profile-stat"><span>Expiry Date</span><span>{formatShortDate(selectedMember.expiryDate)}</span></div>
+                <div className="mm-profile-stat"><span>Days Remaining</span><span>{getDaysRemaining(selectedMember)} days</span></div>
+                <div className="mm-profile-stat"><span>Roles</span><span>{selectedMember.roles.length} assigned</span></div>
+              </div>
+
+              <div className="mm-profile-detail-section">
+                <div className="mm-profile-tabs">
+                  <button type="button" className={`mm-profile-tabs__btn${selectedTab === "payments" ? " is-active" : ""}`} onClick={() => setSelectedTab("payments")}>Payment History</button>
+                  <button type="button" className={`mm-profile-tabs__btn${selectedTab === "attendance" ? " is-active" : ""}`} onClick={() => setSelectedTab("attendance")}>Attendance</button>
+                </div>
+
+                {selectedTab === "payments" ? (
+                  <table className="mm-profile-table">
+                    <thead>
+                      <tr>
+                        <th>Invoice</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paymentHistory.map((entry) => (
+                        <tr key={entry.invoice}>
+                          <td>{entry.invoice}</td>
+                          <td>{formatCompactDate(entry.date)}</td>
+                          <td>{entry.amount}</td>
+                          <td><span className={`mm-chip ${entry.status === "Paid" ? "mm-chip--success" : entry.status === "Pending" ? "mm-chip--warning" : "mm-chip--danger"}`}>{entry.status}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="mm-profile-list">
+                    {attendanceRows.map((entry) => (
+                      <div key={entry.label} className="mm-attendance-card">
+                        <strong>{entry.label}</strong>
+                        <span>{entry.sessions} sessions · {entry.hours} · {entry.trend}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </section>
-        </aside>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

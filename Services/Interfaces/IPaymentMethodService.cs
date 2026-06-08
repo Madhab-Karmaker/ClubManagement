@@ -1,6 +1,6 @@
 using ClubManagement.Domain.DTOs;
 
-namespace ClubManagement.Application.Interfaces
+namespace ClubManagement.Services.Interfaces
 {
     public interface IPaymentMethodService
     {

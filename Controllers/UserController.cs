@@ -1,10 +1,11 @@
-﻿using ClubManagement.Domain.DTOs;
+﻿using ClubManagement.Domain.Constants;
+using ClubManagement.Domain.DTOs;
 using ClubManagement.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-// Controller for managing user accounts and registration.
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -37,7 +38,8 @@ public class UserController : ControllerBase
     }
 
     // 🔹 Get All Users
-    // Retrieves a list of all registered users.
+    // Retrieves a list of all registered users. Admin only.
+    [Authorize(Roles = RoleConstants.Admin)]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers([FromQuery] bool includeDeleted = false)
     {
@@ -46,7 +48,8 @@ public class UserController : ControllerBase
     }
 
     // 🔹 Delete User (Soft Delete)
-    // Deletes a user account (soft delete).
+    // Soft-deletes a user account. Admin only.
+    [Authorize(Roles = RoleConstants.Admin)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(string id)
     {

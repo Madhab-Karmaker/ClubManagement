@@ -3,7 +3,7 @@ namespace ClubManagement.Domain.Models
     public class Donation
     {
         // ============================================================
-        // CORE FIELDS (Existing)
+        // CORE FIELDS
         // ============================================================
         public int Id { get; set; }
         public int MemberId { get; set; }
@@ -12,44 +12,33 @@ namespace ClubManagement.Domain.Models
         public decimal Amount { get; set; }
         public DateTime DonationDate { get; set; }
 
-        /// <summary>Transaction / cheque reference (optional).</summary>
         public string? ReferenceNumber { get; set; }
-
+        public string? ReceiptNumber { get; set; }
         public string? Note { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // ============================================================
-        // NEW FIELDS FOR DASHBOARD SYSTEM
+        // STATUS & CATEGORY
         // ============================================================
 
-        /// <summary>
-        /// Donation Status FK
-        /// 1 = Completed, 2 = Pending, 3 = Cancelled
-        /// </summary>
-        public int StatusId { get; set; } = 1; // Default: Completed
-
-        /// <summary>Navigation to DonationStatus (Completed/Pending/Cancelled)</summary>
+        public int StatusId { get; set; } = 1;
         public DonationStatus Status { get; set; } = null!;
 
-        /// <summary>
-        /// Donation Category FK
-        /// 1 = General, 2 = Event, 3 = Cause, 4 = Project
-        /// </summary>
         public int CategoryId { get; set; }
-
-        /// <summary>Navigation to DonationCategory</summary>
         public DonationCategory Category { get; set; } = null!;
 
-        /// <summary>
-        /// Payment Method FK
-        /// 1 = Cash, 2 = Online, 3 = Cheque, 4 = BankTransfer
-        /// </summary>
         public int PaymentMethodId { get; set; }
-
-        /// <summary>Navigation to PaymentMethodLookup</summary>
         public PaymentMethodLookup PaymentMethodLookup { get; set; } = null!;
 
-        /// <summary>Audit logs tracking all changes to this donation</summary>
+        // ============================================================
+        // SOFT DELETE
+        // ============================================================
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+
+        // ============================================================
+        // AUDIT & NAVIGATION
+        // ============================================================
         public ICollection<DonationAuditLog> AuditLogs { get; set; }
             = new List<DonationAuditLog>();
     }

@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
+  BellIcon,
+  CalendarIcon,
   ChartIcon,
   ChevronDownIcon,
   CreditCardIcon,
+  FileTextIcon,
   HomeIcon,
   LogoutIcon,
+  SettingsIcon,
   ShieldIcon,
   SparklesIcon,
   TagIcon,
-  UserIcon,
   UsersIcon,
 } from "../ui/DashboardIcons";
 
@@ -21,10 +24,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { path: "/dashboard",      label: "Dashboard",        icon: HomeIcon },
-  { path: "/members",        label: "Members",          icon: UsersIcon },
-  { path: "/roles",          label: "Roles",            icon: ShieldIcon },
-  { path: "/payment-methods", label: "Payment Methods", icon: CreditCardIcon },
+  { path: "/dashboard",        label: "Dashboard",        icon: HomeIcon },
+  { path: "/members",          label: "Members",          icon: UsersIcon },
+  { path: "/roles",            label: "Roles",            icon: ShieldIcon },
+  { path: "/events",           label: "Events",           icon: CalendarIcon },
+  { path: "/membership",       label: "Membership",       icon: CreditCardIcon },
+  { path: "/payment-methods",  label: "Payment Methods",  icon: CreditCardIcon },
   {
     label: "Donations",
     icon: ChartIcon,
@@ -33,7 +38,10 @@ const NAV_ITEMS: NavItem[] = [
       { path: "/donation-categories", label: "Donation Categories", icon: TagIcon },
     ],
   },
-  { path: "/profile",        label: "Profile",          icon: UserIcon },
+  { path: "/donor-profiles",   label: "Donor Profiles",   icon: UsersIcon },
+  { path: "/reports",          label: "Reports",          icon: FileTextIcon },
+  { path: "/notifications",    label: "Notifications",    icon: BellIcon },
+  { path: "/settings",         label: "Settings",         icon: SettingsIcon },
 ];
 
 interface SidebarProps {
@@ -149,4 +157,3 @@ const Sidebar: React.FC<SidebarProps> = ({
 };
 
 export default Sidebar;
-

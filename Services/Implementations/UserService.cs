@@ -5,7 +5,7 @@ using ClubManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClubManagement.Services
+namespace ClubManagement.Services.Implementations
 {
     // Implementation of IUserService for managing users and roles using ASP.NET Core Identity.
     public class UserService : IUserService

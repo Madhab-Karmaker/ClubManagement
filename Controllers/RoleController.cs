@@ -1,13 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
+using ClubManagement.Domain.Constants;
 using ClubManagement.Domain.DTOs;
 using ClubManagement.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClubManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize(Roles = RoleConstants.Admin)] // Uncomment this after seeding Admin role
-    // Controller for overseeing system roles and user-role associations.
+    [Authorize(Roles = RoleConstants.Admin)]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;

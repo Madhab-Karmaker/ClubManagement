@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ClubManagement.Domain.Constants;
 using ClubManagement.Domain.DTOs;
 using ClubManagement.Services.Interfaces;
@@ -79,6 +80,56 @@ public class DonationController : ControllerBase
         {
             var message = ex.InnerException?.Message ?? ex.Message;
             return BadRequest(new { message });
+        }
+    }
+
+    // PUT /api/donations/{id}  (Admin or Manager)
+    [HttpPut("api/donations/{id:int}")]
+    [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Manager}")]
+    public async Task<IActionResult> UpdateDonation(int id, [FromBody] UpdateDonationDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            return BadRequest(new { message = string.Join(" ", errors) });
+        }
+
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var donation = await _donationService.UpdateDonationAsync(id, dto, userId);
+            return Ok(donation);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    // DELETE /api/donations/{id}  (Admin only)
+    [HttpDelete("api/donations/{id:int}")]
+    [Authorize(Roles = RoleConstants.Admin)]
+    public async Task<IActionResult> DeleteDonation(int id)
+    {
+        var deleted = await _donationService.DeleteDonationAsync(id);
+        if (!deleted) return NotFound(new { message = $"Donation with ID {id} not found." });
+        return Ok(new { message = "Donation deleted successfully." });
+    }
+
+    // PATCH /api/donations/{id}/status  (Admin or Manager)
+    [HttpPatch("api/donations/{id:int}/status")]
+    [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Manager}")]
+    public async Task<IActionResult> UpdateDonationStatus(int id, [FromQuery] int statusId)
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var donation = await _donationService.UpdateDonationStatusAsync(id, statusId, userId);
+            return Ok(donation);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
     }
 }

@@ -1,0 +1,128 @@
+.mp-page {
+  display: flex; flex-direction: column; gap: 1.25rem; animation: fadeInSmooth 0.3s ease;
+}
+.mp-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.mp-header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #111827; }
+.mp-header p { margin: 0.25rem 0 0; font-size: 0.85rem; color: #6b7280; }
+.mp-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.2rem; border: none;
+  border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.mp-btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+}
+.mp-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(99,102,241,0.35); }
+.mp-error {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.75rem 1rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
+  color: #991b1b; font-size: 0.9rem;
+}
+.mp-error button { background: none; border: none; color: #991b1b; cursor: pointer; font-size: 1.1rem; padding: 0; }
+.mp-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; gap: 1rem; color: #6b7280; }
+
+/* ── Tabs ─────────────────────────────────────────── */
+.mp-tabs { display: flex; gap: 0.5rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 0; }
+.mp-tab {
+  padding: 0.6rem 1.25rem; border: none; border-bottom: 2px solid transparent;
+  background: none; color: #6b7280; font-size: 0.9rem; font-weight: 500; cursor: pointer;
+  margin-bottom: -2px; transition: all 0.15s;
+}
+.mp-tab:hover { color: #374151; }
+.mp-tab.active { color: #6366f1; border-bottom-color: #6366f1; font-weight: 600; }
+
+/* ── Fees Grid ────────────────────────────────────── */
+.mp-fees-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;
+}
+.mp-fee-card {
+  background: #fff; border-radius: 12px; border: 1px solid #f3f4f6;
+  padding: 1.25rem 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s;
+}
+.mp-fee-card:hover { border-color: #e5e7eb; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.mp-fee-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; }
+.mp-fee-card-top h3 { margin: 0; font-size: 1rem; font-weight: 600; color: #111827; }
+.mp-fee-amount { font-size: 1.3rem; font-weight: 700; color: #059669; white-space: nowrap; }
+.mp-fee-card-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.8rem; color: #6b7280; }
+.mp-fee-badge {
+  display: inline-flex; align-items: center; padding: 0.15rem 0.5rem; border-radius: 20px;
+  background: #ede9fe; color: #6d28d9; font-size: 0.75rem; font-weight: 600;
+}
+.mp-fee-due { font-size: 0.75rem; color: #6b7280; }
+.mp-fee-desc { margin: 0.5rem 0 0; font-size: 0.85rem; color: #6b7280; }
+.mp-fee-card-actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f3f4f6; }
+.mp-btn-sm {
+  padding: 0.35rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px;
+  background: #fff; cursor: pointer; font-size: 0.8rem; transition: all 0.15s;
+}
+.mp-btn-sm:hover { border-color: #6366f1; background: #f9fafb; }
+.mp-btn-sm-danger:hover { border-color: #ef4444; color: #ef4444; }
+
+/* ── Table ────────────────────────────────────────── */
+.mp-table-wrapper { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.mp-table { width: 100%; border-collapse: collapse; }
+.mp-table th {
+  padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.mp-table td { padding: 0.75rem 1rem; font-size: 0.88rem; color: #374151; border-bottom: 1px solid #f3f4f6; }
+.mp-table tr:last-child td { border-bottom: none; }
+.mp-table tr:hover td { background: #f9fafb; }
+.mp-member-name { font-weight: 600; color: #111827; }
+.mp-amount { font-weight: 600; color: #059669; }
+.mp-date { color: #9ca3af; font-size: 0.82rem; white-space: nowrap; }
+.mp-status-badge {
+  display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 500;
+}
+.mp-status-badge.completed { background: #dcfce7; color: #059669; }
+.mp-status-badge.pending { background: #fef3c7; color: #b45309; }
+.mp-status-badge.cancelled { background: #fee2e2; color: #991b1b; }
+.mp-days-badge {
+  display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 600;
+}
+.mp-days-badge.critical { background: #fee2e2; color: #dc2626; }
+.mp-days-badge.warning { background: #fef3c7; color: #b45309; }
+.mp-days-badge.ok { background: #dcfce7; color: #059669; }
+
+/* ── Overlay/Modal ────────────────────────────────── */
+.mp-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300;
+  display: flex; align-items: center; justify-content: center; padding: 1.25rem; overflow-y: auto;
+}
+.mp-modal { background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(0,0,0,0.18); width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+.mp-modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 1.5rem 1rem; border-bottom: 1px solid #f3f4f6; position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.mp-modal-header h2 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; }
+.mp-modal-close { background: none; border: none; font-size: 1.2rem; color: #9ca3af; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; }
+.mp-modal-close:hover { background: #f3f4f6; color: #374151; }
+.mp-form { padding: 1.25rem 1.5rem 1.5rem; }
+.mp-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem 1.125rem; margin-bottom: 1.25rem;
+}
+.mp-form-full { grid-column: 1 / -1; }
+
+.mp-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.mp-count { font-size: 0.9rem; color: #6b7280; margin: 0; }
+.mp-table-actions { display: flex; gap: 0.35rem; }
+.mp-btn-sm-success:hover { border-color: #059669; color: #059669; background: #f0fdf4; }
+.mp-note { font-size: 0.82rem; color: #6b7280; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mp-card {
+  background: #fff; border-radius: 12px; padding: 1.5rem; border: 1px solid #f3f4f6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.mp-card-text { font-size: 0.9rem; color: #6b7280; margin: 0 0 1rem; }
+.mp-search-row { display: flex; gap: 0.75rem; align-items: center; }
+.mp-search-row .form-input { max-width: 200px; }
+
+/* ── Empty ────────────────────────────────────────── */
+.mp-empty {
+  text-align: center; padding: 4rem 2rem; background: #fff; border-radius: 14px;
+  border: 2px dashed #e5e7eb;
+}
+.mp-empty-icon { font-size: 3rem; display: block; margin-bottom: 0.75rem; }
+.mp-empty h3 { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; }
+.mp-empty p { margin: 0; font-size: 0.9rem; color: #6b7280; }

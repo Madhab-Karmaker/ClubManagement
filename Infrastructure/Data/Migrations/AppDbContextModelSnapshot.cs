@@ -40,8 +40,14 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("DonationDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("integer");
@@ -52,6 +58,10 @@ namespace ClubManagement.Infrastructure.Data.Migrations
 
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ReceiptNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("ReferenceNumber")
                         .HasMaxLength(100)
@@ -70,9 +80,16 @@ namespace ClubManagement.Infrastructure.Data.Migrations
 
                     b.HasIndex("DonationDate");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("MemberId");
 
                     b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("ReceiptNumber")
+                        .IsUnique();
+
+                    b.HasIndex("ReferenceNumber");
 
                     b.HasIndex("StatusId");
 
@@ -273,6 +290,122 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ClubManagement.Domain.Models.Event", b =>
+                {
+                    b.Property<int>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventId"));
+
+                    b.Property<decimal?>("Budget")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("numeric(15,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int?>("MaxAttendees")
+                        .HasColumnType("integer");
+
+                    b.HasKey("EventId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EventDate");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.EventAttendee", b =>
+                {
+                    b.Property<int>("EventAttendeeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventAttendeeId"));
+
+                    b.Property<bool>("Attended")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("RegisteredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("EventAttendeeId");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("EventId", "MemberId")
+                        .IsUnique();
+
+                    b.ToTable("EventAttendees");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.EventDonation", b =>
+                {
+                    b.Property<int>("EventDonationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventDonationId"));
+
+                    b.Property<int>("DonationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("EventDonationId");
+
+                    b.HasIndex("DonationId");
+
+                    b.HasIndex("EventId", "DonationId")
+                        .IsUnique();
+
+                    b.ToTable("EventDonations");
+                });
+
             modelBuilder.Entity("ClubManagement.Domain.Models.Member", b =>
                 {
                     b.Property<int>("MemberId")
@@ -284,6 +417,9 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                     b.Property<string>("Address")
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -299,6 +435,9 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("JoinDate")
@@ -326,7 +465,11 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("ExpiryDate");
+
                     b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("JoinDate");
 
@@ -336,6 +479,93 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Members");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.MembershipFee", b =>
+                {
+                    b.Property<int>("MembershipFeeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MembershipFeeId"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("numeric(15,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("DonationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("MembershipFeeId");
+
+                    b.HasIndex("DonationId");
+
+                    b.HasIndex("DueDate");
+
+                    b.HasIndex("IsPaid");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("MembershipFees");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.MembershipRenewal", b =>
+                {
+                    b.Property<int>("MembershipRenewalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MembershipRenewalId"));
+
+                    b.Property<decimal?>("FeePaid")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("numeric(15,2)");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("NewExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("PreviousExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("RenewedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RenewedByUserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("MembershipRenewalId");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("RenewedByUserId");
+
+                    b.ToTable("MembershipRenewals");
                 });
 
             modelBuilder.Entity("ClubManagement.Domain.Models.MonthlySummary", b =>
@@ -378,6 +608,56 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("MonthlySummaries");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("MemberId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("NotificationId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("IsRead");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("ClubManagement.Domain.Models.PaymentMethodLookup", b =>
@@ -445,6 +725,79 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ClubManagement.Domain.Models.Receipt", b =>
+                {
+                    b.Property<int>("ReceiptId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReceiptId"));
+
+                    b.Property<int>("DonationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GeneratedByUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReceiptNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("ReceiptId");
+
+                    b.HasIndex("DonationId");
+
+                    b.HasIndex("GeneratedByUserId");
+
+                    b.HasIndex("ReceiptNumber")
+                        .IsUnique();
+
+                    b.ToTable("Receipts");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.SavedReport", b =>
+                {
+                    b.Property<int>("SavedReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SavedReportId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GeneratedByUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Parameters")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReportName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ReportType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("SavedReportId");
+
+                    b.HasIndex("GeneratedByUserId");
+
+                    b.HasIndex("ReportType");
+
+                    b.ToTable("SavedReports");
+                });
+
             modelBuilder.Entity("ClubManagement.Domain.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -501,6 +854,8 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -690,6 +1045,54 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                     b.Navigation("Donation");
                 });
 
+            modelBuilder.Entity("ClubManagement.Domain.Models.Event", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.EventAttendee", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.Event", "Event")
+                        .WithMany("Attendees")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClubManagement.Domain.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.EventDonation", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.Donation", "Donation")
+                        .WithMany()
+                        .HasForeignKey("DonationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClubManagement.Domain.Models.Event", "Event")
+                        .WithMany("EventDonations")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Donation");
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("ClubManagement.Domain.Models.Member", b =>
                 {
                     b.HasOne("ClubManagement.Domain.Models.User", "User")
@@ -698,6 +1101,87 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.MembershipFee", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.Donation", "Donation")
+                        .WithMany()
+                        .HasForeignKey("DonationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ClubManagement.Domain.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Donation");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.MembershipRenewal", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.Member", "Member")
+                        .WithMany("Renewals")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClubManagement.Domain.Models.User", "RenewedBy")
+                        .WithMany()
+                        .HasForeignKey("RenewedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Member");
+
+                    b.Navigation("RenewedBy");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.Notification", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.Member", "Member")
+                        .WithMany("Notifications")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ClubManagement.Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Member");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.Receipt", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.Donation", "Donation")
+                        .WithMany()
+                        .HasForeignKey("DonationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClubManagement.Domain.Models.User", "GeneratedBy")
+                        .WithMany()
+                        .HasForeignKey("GeneratedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Donation");
+
+                    b.Navigation("GeneratedBy");
+                });
+
+            modelBuilder.Entity("ClubManagement.Domain.Models.SavedReport", b =>
+                {
+                    b.HasOne("ClubManagement.Domain.Models.User", "GeneratedBy")
+                        .WithMany()
+                        .HasForeignKey("GeneratedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("GeneratedBy");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -766,9 +1250,20 @@ namespace ClubManagement.Infrastructure.Data.Migrations
                     b.Navigation("Donations");
                 });
 
+            modelBuilder.Entity("ClubManagement.Domain.Models.Event", b =>
+                {
+                    b.Navigation("Attendees");
+
+                    b.Navigation("EventDonations");
+                });
+
             modelBuilder.Entity("ClubManagement.Domain.Models.Member", b =>
                 {
                     b.Navigation("Donations");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Renewals");
                 });
 
             modelBuilder.Entity("ClubManagement.Domain.Models.PaymentMethodLookup", b =>

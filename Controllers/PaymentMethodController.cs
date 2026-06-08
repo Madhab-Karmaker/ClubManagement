@@ -1,5 +1,5 @@
-using ClubManagement.Application.Interfaces;
 using ClubManagement.Domain.DTOs;
+using ClubManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

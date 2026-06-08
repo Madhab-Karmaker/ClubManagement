@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using ClubManagement.Application.Interfaces;
-using ClubManagement.Domain.Models;
 using ClubManagement.Domain.DTOs;
+using ClubManagement.Domain.Models;
 using ClubManagement.Infrastructure.Data;
+using ClubManagement.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
-namespace ClubManagement.Infrastructure.Services
+namespace ClubManagement.Services.Implementations
 {
     public class PaymentMethodService : IPaymentMethodService
     {

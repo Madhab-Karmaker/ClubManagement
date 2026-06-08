@@ -12,11 +12,19 @@ import {
 } from "../ui/DashboardIcons";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/dashboard":  "Dashboard",
-  "/members":    "Members",
-  "/roles":      "Roles",
-  "/donations":  "Donations",
-  "/profile":    "Profile",
+  "/dashboard":       "Dashboard",
+  "/members":         "Members",
+  "/roles":           "Roles",
+  "/events":          "Events",
+  "/membership":      "Membership",
+  "/donations":       "Donations",
+  "/profile":         "Profile",
+  "/reports":         "Reports",
+  "/notifications":   "Notifications",
+  "/settings":        "Settings",
+  "/payment-methods": "Payment Methods",
+  "/donation-categories": "Donation Categories",
+  "/donor-profiles":  "Donor Profiles",
 };
 
 const ProtectedLayout = () => {
@@ -77,7 +85,7 @@ const ProtectedLayout = () => {
             <button className="topbar-action-btn" aria-label="Messages">
               <MessageIcon className="topbar-action-icon" />
             </button>
-            <button className="topbar-action-btn" aria-label="Notifications">
+            <button className="topbar-action-btn" aria-label="Notifications" onClick={() => navigate("/notifications")}>
               <BellIcon className="topbar-action-icon" />
               <span className="topbar-notification-dot" />
             </button>

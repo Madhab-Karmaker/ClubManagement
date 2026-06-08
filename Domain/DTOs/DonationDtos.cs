@@ -2,31 +2,39 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClubManagement.Domain.DTOs
 {
+    public class UpdateDonationDto
+    {
+        [Range(0.01, double.MaxValue)]
+        public decimal? Amount { get; set; }
+
+        [Range(1, int.MaxValue)]
+        public int? CategoryId { get; set; }
+
+        [Range(1, int.MaxValue)]
+        public int? PaymentMethodId { get; set; }
+
+        [MaxLength(100)]
+        public string? ReferenceNumber { get; set; }
+
+        public DateTime? DonationDate { get; set; }
+
+        [MaxLength(500)]
+        public string? Note { get; set; }
+    }
+
+
     // ── Query parameters ─────────────────────────────────────────────────────
 
     public class DonationQueryParams
     {
-        /// <summary>Filter by member ID.</summary>
         public int? MemberId { get; set; }
-
-        /// <summary>Filter by donation category ID.</summary>
         public int? CategoryId { get; set; }
-
-        /// <summary>Filter by payment method ID.</summary>
         public int? PaymentMethodId { get; set; }
-
-        /// <summary>From date (inclusive).</summary>
+        public int? StatusId { get; set; }
         public DateTime? FromDate { get; set; }
-
-        /// <summary>To date (inclusive).</summary>
         public DateTime? ToDate { get; set; }
-
-        /// <summary>Column to sort by (amount, donationDate, createdAt). Defaults to donationDate.</summary>
         public string SortBy { get; set; } = "donationDate";
-
-        /// <summary>Sort direction: asc or desc. Defaults to desc.</summary>
         public string SortDir { get; set; } = "desc";
-
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 10;
     }
@@ -71,6 +79,9 @@ namespace ClubManagement.Domain.DTOs
         public decimal Amount { get; set; }
         public string CategoryName { get; set; } = null!;
         public string PaymentMethod { get; set; } = null!;
+        public string? StatusName { get; set; }
+        public int StatusId { get; set; }
+        public string? ReceiptNumber { get; set; }
         public string? ReferenceNumber { get; set; }
         public DateTime DonationDate { get; set; }
         public string? Note { get; set; }

@@ -1,24 +1,21 @@
 using ClubManagement.Domain.Models;
 using ClubManagement.Infrastructure.Data;
-using ClubManagement.Application.Interfaces;
-using ClubManagement.Services.Interfaces;
-using ClubManagement.Services;
+using ClubManagement.Middleware;
 using ClubManagement.Services.Implementations;
-using ClubManagement.Infrastructure.Services;
+using ClubManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ CORS – allow the Vite dev server (and production origin) to call the API
+// ✅ CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:5173",   // Vite dev server
+                "http://localhost:5173",
                 "https://localhost:5173"
               )
               .AllowAnyHeader()
@@ -28,15 +25,10 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IMemberService, MemberService>();
-builder.Services.AddScoped<IDonationService, DonationService>();
-builder.Services.AddScoped<IDonationCategoryService, DonationCategoryService>();
-builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// ✅ Identity setup
+
+// ✅ Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -46,10 +38,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// ✅ Cookie behaviour: return 401/403 for API calls instead of redirecting to /Account/Login
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    // Prevent the cookie middleware from redirecting API requests to a login page
     options.Events.OnRedirectToLogin = ctx =>
     {
         ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -61,8 +51,6 @@ builder.Services.ConfigureApplicationCookie(options =>
         return Task.CompletedTask;
     };
 
-    // In development the Vite proxy serves over HTTP, so drop the Secure flag
-    // so the browser can store the cookie without HTTPS
     if (builder.Environment.IsDevelopment())
     {
         options.Cookie.SecurePolicy = CookieSecurePolicy.None;
@@ -70,21 +58,42 @@ builder.Services.ConfigureApplicationCookie(options =>
     }
 });
 
+// ✅ Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+// ✅ DI Registrations
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IDonationService, DonationService>();
+builder.Services.AddScoped<IDonationCategoryService, DonationCategoryService>();
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IMembershipFeeService, MembershipFeeService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IReceiptService, ReceiptService>();
+builder.Services.AddScoped<IExportService, ExportService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IBulkOperationService, BulkOperationService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
 var app = builder.Build();
 
-// Seed Roles
+// ✅ Exception handling middleware (must be first in pipeline)
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// ✅ Seed
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await DbInitializer.SeedAsync(services);
 }
 
-// Enable Swagger in Development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -92,8 +101,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("FrontendPolicy");   // ✅ must be before UseAuthorization
-app.UseAuthentication();         // ✅ reads the session cookie
+app.UseCors("FrontendPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
